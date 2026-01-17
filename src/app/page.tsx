@@ -67,23 +67,23 @@ export default function Home() {
 
 function FeatureBento() {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-4 max-w-5xl mx-auto mt-32 h-[600px]">
+        <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 max-w-5xl mx-auto mt-20 md:mt-32 h-auto md:h-[600px] px-4 md:px-0">
             {/* Main Feature - Large */}
             <motion.div 
                 whileHover={{ scale: 1.01 }}
-                className="md:col-span-2 md:row-span-2 rounded-[2rem] bg-secondary/30 border border-border p-8 flex flex-col justify-between overflow-hidden relative"
+                className="md:col-span-2 md:row-span-2 min-h-[350px] md:min-h-0 rounded-[2rem] bg-secondary/30 border border-border p-6 md:p-8 flex flex-col justify-between overflow-hidden relative"
             >
                 <div className="relative z-10">
                     <div className="bg-primary/10 w-12 h-12 rounded-2xl flex items-center justify-center mb-4 text-primary">
                         <Star size={24} fill="currentColor" />
                     </div>
-                    <h3 className="text-3xl font-bold mb-2 text-foreground">Collect & Embed</h3>
-                    <p className="text-muted-foreground">The easiest way to gather video and text testimonials. Copy a single line of code to showcase social proof anywhere.</p>
+                    <h3 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">Collect & Embed</h3>
+                    <p className="text-sm md:text-base text-muted-foreground">The easiest way to gather video and text testimonials. Copy a single line of code to showcase social proof anywhere.</p>
                 </div>
                 <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-3xl" />
                 
                 {/* Visual Mockup */}
-                <div className="mt-8 bg-white/50 backdrop-blur rounded-xl p-4 border border-white/20 shadow-sm w-full h-full max-h-[200px] flex gap-3 text-xs overflow-hidden">
+                <div className="mt-6 md:mt-8 bg-white/50 backdrop-blur rounded-xl p-4 border border-white/20 shadow-sm w-full h-32 md:h-full md:max-h-[200px] flex gap-3 text-xs overflow-hidden">
                     <div className="w-1/3 bg-muted rounded-lg animate-pulse" />
                     <div className="w-1/3 bg-muted rounded-lg animate-pulse delay-75" />
                     <div className="w-1/3 bg-muted rounded-lg animate-pulse delay-150" />
@@ -93,16 +93,16 @@ function FeatureBento() {
             {/* Side Feature 1 */}
             <motion.div 
                  whileHover={{ scale: 1.02 }}
-                className="md:col-span-2 rounded-[2rem] bg-white/40 border border-border p-8 flex items-center justify-between group overflow-hidden"
+                className="md:col-span-2 min-h-[150px] rounded-[2rem] bg-white/40 border border-border p-6 md:p-8 flex items-center justify-between group overflow-hidden"
             >
                 <div className="relative z-10">
                     <div className="bg-orange-100 w-10 h-10 rounded-xl flex items-center justify-center mb-3 text-orange-600">
                         <Shield size={20} />
                     </div>
-                    <h3 className="text-xl font-bold text-foreground">Moderation Control</h3>
-                    <p className="text-sm text-muted-foreground mt-1">Filter the noise. Approve only the best.</p>
+                    <h3 className="text-lg md:text-xl font-bold text-foreground">Moderation Control</h3>
+                    <p className="text-xs md:text-sm text-muted-foreground mt-1">Filter the noise. Approve only the best.</p>
                 </div>
-                <div className="w-24 h-24 rounded-full border-4 border-orange-100 group-hover:scale-110 transition-transform flex items-center justify-center text-4xl opacity-20">
+                <div className="w-16 h-16 md:w-24 md:h-24 rounded-full border-4 border-orange-100 group-hover:scale-110 transition-transform flex items-center justify-center text-2xl md:text-4xl opacity-20">
                     🛡️
                 </div>
             </motion.div>
@@ -110,24 +110,25 @@ function FeatureBento() {
             {/* Side Feature 2 */}
             <motion.div 
                  whileHover={{ scale: 1.02 }}
-                className="md:col-span-1 rounded-[2rem] bg-[#E3F2FD] border border-blue-100 p-6 flex flex-col justify-center"
+                className="md:col-span-1 min-h-[150px] rounded-[2rem] bg-[#E3F2FD] border border-blue-100 p-5 md:p-6 flex flex-col justify-center"
             >
-                <div className="text-blue-500 mb-4">
-                    <Zap size={32} />
+                <div className="text-blue-500 mb-3 md:mb-4">
+                    <Zap size={28} className="md:hidden" />
+                    <Zap size={32} className="hidden md:block" />
                 </div>
-                <h3 className="text-lg font-bold text-blue-900">Blazing Fast</h3>
+                <h3 className="text-base md:text-lg font-bold text-blue-900">Blazing Fast</h3>
                 <p className="text-xs text-blue-700/70 mt-1">Redis cached embeds load in &lt;50ms.</p>
             </motion.div>
 
             {/* Side Feature 3 */}
             <motion.div 
                  whileHover={{ scale: 1.02 }}
-                className="md:col-span-1 rounded-[2rem] bg-[#F5F5F4] border border-stone-200 p-6 flex flex-col justify-center relative overflow-hidden"
+                className="md:col-span-1 min-h-[150px] rounded-[2rem] bg-[#F5F5F4] border border-stone-200 p-5 md:p-6 flex flex-col justify-center relative overflow-hidden"
             >
                 <div className="absolute top-0 right-0 p-4 opacity-10">
                     <Star size={80} />
                 </div>
-                <h3 className="text-lg font-bold text-stone-800">Organic Growth</h3>
+                <h3 className="text-base md:text-lg font-bold text-stone-800">Organic Growth</h3>
                 <p className="text-xs text-stone-500 mt-1">Watch your reputation grow naturally.</p>
             </motion.div>
         </div>
