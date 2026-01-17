@@ -1,28 +1,60 @@
 @import "tailwindcss";
 
 :root {
-  /* Futuristic Dark Theme Palette */
-  --background: #030014;
-  --foreground: #e2e8f0;
-  
-  --primary: #8b5cf6; /* Violet 500 */
-  --primary-foreground: #ffffff;
-  
-  --secondary: #ec4899; /* Pink 500 */
-  --secondary-foreground: #ffffff;
+  /* Earth Tone Palette (Refined Light Mode) */
+  --background: #FAFAF5;
+  /* Off-white/Paper - cleaner than yellow cream */
+  --foreground: #2C3327;
+  /* Deep Forest Green - softer than black */
 
-  --accent: #06b6d4; /* Cyan 500 */
+  --primary: #607D3B;
+  /* Natural Green */
+  --primary-foreground: #ffffff;
+
+  --secondary: #E9EED9;
+  /* Pale Sage */
+  --secondary-foreground: #2C3327;
+
+  --accent: #D7CCC8;
+  /* Mushroom/Taupe */
+  --accent-foreground: #2C3327;
+
+  --muted: #F2F2EC;
+  --muted-foreground: #788573;
+
+  --card: rgba(255, 255, 255, 0.7);
+  --card-foreground: #2C3327;
+
+  --border: rgba(96, 125, 59, 0.15);
+  --input: rgba(255, 255, 255, 0.9);
+  --ring: #607D3B;
+}
+
+[data-theme="dark"] {
+  /* Adapted Earth Tones for Dark Mode */
+  --background: #1C1F1A;
+  /* Very dark olive */
+  --foreground: #F6F0D7;
+  /* Cream text */
+
+  --primary: #9CAB84;
+  --primary-foreground: #ffffff;
+
+  --secondary: #3A3F35;
+  --secondary-foreground: #F6F0D7;
+
+  --accent: #89986D;
   --accent-foreground: #ffffff;
 
-  --muted: #1e1b4b; /* Indigo 950 */
-  --muted-foreground: #94a3b8;
+  --muted: #2A2F27;
+  --muted-foreground: #A1A1AA;
 
-  --card: rgba(15, 23, 42, 0.6);
-  --card-foreground: #e2e8f0;
-  
-  --border: rgba(148, 163, 184, 0.1);
-  --input: rgba(15, 23, 42, 0.6);
-  --ring: #8b5cf6;
+  --card: rgba(28, 31, 26, 0.6);
+  --card-foreground: #F6F0D7;
+
+  --border: rgba(156, 171, 132, 0.2);
+  --input: rgba(42, 47, 39, 0.6);
+  --ring: #9CAB84;
 }
 
 @theme inline {
@@ -41,7 +73,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -51,18 +83,20 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Glassmorphism Utilities */
+/* Glassmorphism Utilities - Adapted for Earth Tones */
 .glass {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
 }
 
 .glass-card {
   background: var(--card);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
