@@ -20,8 +20,8 @@ export default function Home() {
           className="max-w-4xl mx-auto"
         >
           <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3 py-1 mb-8">
-            <span className="flex h-2 w-2 rounded-full bg-accent animate-pulse"></span>
-            <span className="text-xs font-medium text-accent">v1.0 Public Beta</span>
+            <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+            <span className="text-xs font-medium text-primary">v1.0 Public Beta</span>
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-foreground">
