@@ -4,14 +4,18 @@
     const spaceId = currentScript.getAttribute('data-space-id');
     const layout = currentScript.getAttribute('data-layout') || 'grid'; // grid | carousel
 
+    // Get base URL from the script src
+    const scriptSrc = currentScript.src;
+    const baseUrl = scriptSrc.substring(0, scriptSrc.lastIndexOf('/'));
+
     if (!spaceId) return;
 
     const container = document.createElement('div');
     container.id = `testispace-embed-${spaceId}`;
     currentScript.parentNode.insertBefore(container, currentScript);
 
-    // Fetch testimonials
-    fetch(`https://testispace-app.vercel.app/api/embed/${spaceId}`) // Update URL in production
+    // Fetch testimonials using dynamic base URL
+    fetch(`${baseUrl}/api/embed/${spaceId}`)
         .then(res => res.json())
         .then(data => {
             if (!data || data.length === 0) return;

@@ -29,7 +29,7 @@ export const authOptions: NextAuthOptions = {
 
                 await connectDB();
 
-                const user = await User.findOne({ email: credentials.email }).select("+password");
+                const user = await User.findOne({ email: credentials.email.toLowerCase() }).select("+password");
 
                 if (!user || !user.password) {
                     throw new Error("Invalid credentials");
@@ -50,11 +50,12 @@ export const authOptions: NextAuthOptions = {
             if (account?.provider === "google" || account?.provider === "github") {
                 await connectDB();
                 try {
-                    let existingUser = await User.findOne({ email: user.email });
+                    const normalizedEmail = user.email?.toLowerCase();
+                    let existingUser = await User.findOne({ email: normalizedEmail });
                     if (!existingUser) {
                         existingUser = await User.create({
                             name: user.name,
-                            email: user.email,
+                            email: normalizedEmail,
                             image: user.image,
                             provider: account.provider,
                         });

@@ -11,33 +11,52 @@ export default function SubmissionForm({ spaceId }: { spaceId: string }) {
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   // Cloudinary Upload Logic
-  const uploadFile = async (file: File) => {
+  const uploadFile = async (file: File): Promise<string> => {
     const { timestamp, signature, cloudName, apiKey } = await fetch("/api/sign-cloudinary", {
         method: "POST"
     }).then(res => res.json());
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("api_key", apiKey);
-    formData.append("timestamp", timestamp.toString());
-    formData.append("signature", signature);
-    formData.append("folder", "testispace");
+    return new Promise((resolve, reject) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("api_key", apiKey);
+      formData.append("timestamp", timestamp.toString());
+      formData.append("signature", signature);
+      formData.append("folder", "testispace");
 
-    const endpoint = `https://api.cloudinary.com/v1_1/${cloudName}/${file.type.startsWith('video') ? 'video' : 'image'}/upload`;
+      const endpoint = `https://api.cloudinary.com/v1_1/${cloudName}/${file.type.startsWith('video') ? 'video' : 'image'}/upload`;
 
-    const res = await fetch(endpoint, {
-      method: "POST",
-      body: formData,
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", endpoint);
+
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
+          setUploadProgress(percent);
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          const response = JSON.parse(xhr.responseText);
+          resolve(response.secure_url);
+        } else {
+          reject(new Error("Upload failed"));
+        }
+      };
+
+      xhr.onerror = () => reject(new Error("Upload failed"));
+      xhr.send(formData);
     });
-    const data = await res.json();
-    return data.secure_url;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setUploadProgress(0);
 
     try {
       let mediaUrl = "";
@@ -67,9 +86,10 @@ export default function SubmissionForm({ spaceId }: { spaceId: string }) {
         alert("Failed to submit testimonial");
       }
     } catch (error) {
-      alert("Something went wrong");
+      alert("Something went wrong during upload or submission");
     } finally {
       setSubmitting(false);
+      setUploadProgress(0);
     }
   };
 
@@ -120,12 +140,42 @@ export default function SubmissionForm({ spaceId }: { spaceId: string }) {
             <input 
                 type="file" 
                 accept="image/*,video/*"
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                onChange={(e) => {
+                  setFile(e.target.files?.[0] || null);
+                  setUploadProgress(0);
+                }}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                disabled={submitting}
             />
             {file ? (
-                <div className="text-sm text-green-400 font-medium">
-                    {file.name}
+                <div className="flex flex-col items-center gap-2">
+                    <div className="text-sm text-green-400 font-medium truncate max-w-xs">
+                        {file.name}
+                    </div>
+                    {submitting && uploadProgress > 0 && uploadProgress < 100 && (
+                      <div className="relative w-12 h-12">
+                        <svg className="w-full h-full" viewBox="0 0 36 36">
+                          <path
+                            className="text-gray-200 stroke-current"
+                            strokeWidth="3"
+                            fill="none"
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          />
+                          <path
+                            className="text-primary stroke-current"
+                            strokeWidth="3"
+                            strokeDasharray={`${uploadProgress}, 100`}
+                            strokeLinecap="round"
+                            fill="none"
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          />
+                          <text x="18" y="20.35" className="text-[8px] font-bold" textAnchor="middle" fill="currentColor">{uploadProgress}%</text>
+                        </svg>
+                      </div>
+                    )}
+                    {submitting && uploadProgress === 100 && (
+                      <div className="text-xs text-primary animate-pulse">Processing...</div>
+                    )}
                 </div>
             ) : (
                 <div className="text-muted-foreground flex flex-col items-center gap-2">
@@ -165,8 +215,9 @@ export default function SubmissionForm({ spaceId }: { spaceId: string }) {
         disabled={submitting}
         className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-lg transition-all shadow-[0_0_20px_rgba(139,92,246,0.5)] disabled:opacity-50"
       >
-        {submitting ? "Sending..." : "Submit Testimonial"}
+        {submitting ? (uploadProgress < 100 ? `Uploading (${uploadProgress}%)` : "Sending...") : "Submit Testimonial"}
       </button>
     </form>
   );
 }
+

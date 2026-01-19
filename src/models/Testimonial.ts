@@ -23,7 +23,7 @@ const TestimonialSchema = new Schema<ITestimonial>({
     rating: { type: Number, min: 1, max: 5, required: true },
     userDetails: {
         name: { type: String, required: true },
-        email: { type: String },
+        email: { type: String, lowercase: true },
         avatar: { type: String },
         designation: { type: String },
     },

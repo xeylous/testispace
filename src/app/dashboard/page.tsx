@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { Plus, Settings, MessageSquare, ExternalLink } from "lucide-react";
+import { Plus } from "lucide-react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import connectDB from "@/lib/db";
 import Space from "@/models/Space";
+import Testimonial from "@/models/Testimonial";
+import SpaceCard from "@/components/SpaceCard";
 
 async function getSpaces() {
   const session = await getServerSession(authOptions);
@@ -12,11 +14,27 @@ async function getSpaces() {
   await connectDB();
   // @ts-ignore
   const spaces = await Space.find({ ownerId: session.user.id }).sort({ createdAt: -1 });
-  return spaces;
+  
+  // Get testimonial counts for each space
+  const spacesWithCounts = await Promise.all(
+    spaces.map(async (space: any) => {
+      const count = await Testimonial.countDocuments({ spaceId: space._id });
+      return {
+        _id: space._id.toString(),
+        name: space.name,
+        slug: space.slug,
+        testimonialCount: count,
+      };
+    })
+  );
+  
+  return spacesWithCounts;
 }
 
 export default async function DashboardPage() {
   const spaces = await getSpaces();
+  // Use NEXTAUTH_URL for the base, fallback to vercel URL or localhost
+  const baseUrl = process.env.NEXTAUTH_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -47,28 +65,12 @@ export default async function DashboardPage() {
                 </Link>
             </div>
         ) : (
-            spaces.map((space: any) => (
-                <div key={space._id} className="glass-card p-6 rounded-xl hover:bg-white/5 transition-colors group">
-                    <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-xl font-bold truncate">{space.name}</h3>
-                        <Link href={`/${space.slug}`} target="_blank" className="text-muted-foreground hover:text-accent">
-                            <ExternalLink size={18} />
-                        </Link>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mt-4 pt-4 border-t border-border">
-                         <div className="flex items-center gap-1">
-                            <MessageSquare size={16} />
-                            <span>0 Testimonials</span> 
-                         </div>
-                         <Link href={`/dashboard/space/${space.slug}`} className="ml-auto flex items-center gap-1 hover:text-white transition-colors">
-                            <Settings size={16} />
-                            Manage
-                         </Link>
-                    </div>
-                </div>
+            spaces.map((space) => (
+                <SpaceCard key={space._id} space={space} baseUrl={baseUrl} />
             ))
         )}
       </div>
     </div>
   );
 }
+
