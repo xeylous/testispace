@@ -50,15 +50,17 @@ export const authOptions: NextAuthOptions = {
             if (account?.provider === "google" || account?.provider === "github") {
                 await connectDB();
                 try {
-                    const existingUser = await User.findOne({ email: user.email });
+                    let existingUser = await User.findOne({ email: user.email });
                     if (!existingUser) {
-                        await User.create({
+                        existingUser = await User.create({
                             name: user.name,
                             email: user.email,
                             image: user.image,
                             provider: account.provider,
                         });
                     }
+                    // Store MongoDB _id on the user object for the jwt callback
+                    user.id = existingUser._id.toString();
                     return true;
                 } catch (error) {
                     console.log("Error checking if user exists: ", error);
