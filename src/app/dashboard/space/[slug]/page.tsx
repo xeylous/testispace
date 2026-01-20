@@ -16,23 +16,38 @@ async function getSpaceData(slug: string) {
   const space = await Space.findOne({ slug, ownerId: session.user.id });
   if (!space) return null;
 
-  const testimonials = await Testimonial.find({ spaceId: space._id }).sort({ createdAt: -1 });
+  const testimonials = await Testimonial.find({ spaceId: space._id }).sort({ createdAt: -1 }).lean();
   
   // Convert to plain objects
-  const plainTestimonials = testimonials.map((t: any) => ({
-    _id: t._id.toString(),
-    type: t.type,
-    content: t.content,
-    rating: t.rating,
-    userDetails: {
-      name: t.userDetails.name,
-      email: t.userDetails.email || '',
-      designation: t.userDetails.designation || '',
-    },
-    isApproved: t.isApproved,
-    isArchived: t.isArchived,
-    createdAt: t.createdAt.toISOString(),
-  }));
+  const plainTestimonials = testimonials.map((t: any) => {
+    // Robust mapping for old vs new testimonials
+    const rawMediaType = t.mediaType || t.type;
+    const isMedia = rawMediaType === 'image' || rawMediaType === 'video';
+    
+    const mediaType = isMedia ? rawMediaType : 'none';
+    const mediaUrl = t.mediaUrl || (isMedia ? t.content : "");
+    // Only fall back to content if it's NOT media, otherwise we get the URL as text
+    const textContent = t.textContent || (!isMedia ? t.content : "");
+
+    return {
+      _id: t._id.toString(),
+      textContent,
+      mediaUrl,
+      mediaType,
+      type: t.type, // keeping for compat
+      content: t.content, // keeping for compat
+      rating: t.rating,
+      userDetails: {
+        name: t.userDetails?.name || "Anonymous",
+        email: t.userDetails?.email || '',
+        designation: t.userDetails?.designation || '',
+        avatar: t.userDetails?.avatar || '',
+      },
+      isApproved: t.isApproved,
+      isArchived: t.isArchived,
+      createdAt: t.createdAt ? t.createdAt.toISOString() : new Date().toISOString(),
+    };
+  });
   
   return { 
     space: {
@@ -51,7 +66,7 @@ export default async function SpaceManagementPage({ params }: { params: any }) {
   if (!data) return notFound();
   
   const { space, testimonials } = data;
-  const baseUrl = process.env.NEXTAUTH_URL || `https://${process.env.VERCEL_URL}` || "http://localhost:3000";
+  const baseUrl = process.env.NEXTAUTH_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -82,12 +97,12 @@ export default async function SpaceManagementPage({ params }: { params: any }) {
              <p className="text-3xl font-bold text-green-500">{testimonials.filter((t) => t.isApproved).length}</p>
         </div>
         <div className="glass-card p-4 rounded-xl">
-             <h3 className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Video</h3>
-             <p className="text-3xl font-bold">{testimonials.filter((t) => t.type === 'video').length}</p>
+             <h3 className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Media</h3>
+             <p className="text-3xl font-bold">{testimonials.filter((t) => t.mediaType !== 'none').length}</p>
         </div>
         <div className="glass-card p-4 rounded-xl">
-             <h3 className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Text</h3>
-             <p className="text-3xl font-bold">{testimonials.filter((t) => t.type === 'text').length}</p>
+             <h3 className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Text Only</h3>
+             <p className="text-3xl font-bold">{testimonials.filter((t) => t.mediaType === 'none').length}</p>
         </div>
       </div>
 

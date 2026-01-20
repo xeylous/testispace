@@ -2,6 +2,9 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ITestimonial extends Document {
     spaceId: mongoose.Schema.Types.ObjectId;
+    textContent?: string;
+    mediaUrl?: string;
+    mediaType: 'none' | 'image' | 'video';
     type: 'text' | 'video' | 'image';
     content: string; // text or url
     rating: number;
@@ -18,8 +21,11 @@ export interface ITestimonial extends Document {
 
 const TestimonialSchema = new Schema<ITestimonial>({
     spaceId: { type: Schema.Types.ObjectId, ref: 'Space', required: true },
-    type: { type: String, enum: ['text', 'video', 'image'], required: true },
-    content: { type: String, required: true },
+    textContent: { type: String }, // NEW
+    mediaUrl: { type: String },    // NEW
+    mediaType: { type: String, enum: ['none', 'image', 'video'], default: 'none' }, // NEW
+    type: { type: String, enum: ['text', 'video', 'image'], required: true }, // Keeping for compatibility
+    content: { type: String, required: true }, // Keeping for compatibility
     rating: { type: Number, min: 1, max: 5, required: true },
     userDetails: {
         name: { type: String, required: true },
@@ -32,4 +38,11 @@ const TestimonialSchema = new Schema<ITestimonial>({
     createdAt: { type: Date, default: Date.now },
 });
 
-export default mongoose.models.Testimonial || mongoose.model<ITestimonial>('Testimonial', TestimonialSchema);
+// Force model recompilation to ensure schema updates are picked up in development
+if (process.env.NODE_ENV !== 'production' && mongoose.models && mongoose.models.Testimonial) {
+    delete mongoose.models.Testimonial;
+}
+
+const Testimonial = mongoose.models.Testimonial || mongoose.model<ITestimonial>('Testimonial', TestimonialSchema);
+
+export default Testimonial;

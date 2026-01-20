@@ -52,24 +52,44 @@ export default function TestimonialCard({ testimonial }: { testimonial: any }) {
                 </div>
                 <span className="text-xs text-muted-foreground ml-auto">{new Date(testimonial.createdAt).toLocaleDateString()}</span>
             </div>
-            <p className="text-lg mb-4 text-white/90">
-                {testimonial.content.startsWith('http') && (testimonial.type === 'video' || testimonial.type === 'image') ? (
-                    testimonial.type === 'video' ? (
-                        <video src={testimonial.content} controls className="w-full max-w-sm rounded-lg" />
-                    ) : (
-                        <img src={testimonial.content} alt="Testimonial" className="w-full max-w-sm rounded-lg" />
-                    )
+            <div className="text-lg mb-4 text-white/90">
+                {testimonial.mediaType && testimonial.mediaType !== 'none' ? (
+                    <div className="mb-4">
+                        {testimonial.mediaType === 'video' ? (
+                            <video src={testimonial.mediaUrl} controls className="w-full max-w-sm rounded-lg" />
+                        ) : (
+                            <img src={testimonial.mediaUrl} alt="Testimonial" className="w-full max-w-sm rounded-lg" />
+                        )}
+                    </div>
                 ) : (
-                    `"${testimonial.content}"`
+                    testimonial.content?.startsWith('http') && (testimonial.type === 'video' || testimonial.type === 'image') && (
+                        <div className="mb-4">
+                             {testimonial.type === 'video' ? (
+                                <video src={testimonial.content} controls className="w-full max-w-sm rounded-lg" />
+                            ) : (
+                                <img src={testimonial.content} alt="Testimonial" className="w-full max-w-sm rounded-lg" />
+                            )}
+                        </div>
+                    )
                 )}
-            </p>
+                {testimonial.textContent ? (
+                    <p className="italic">"{testimonial.textContent}"</p>
+                ) : (
+                    (!testimonial.content?.startsWith('http') || testimonial.type === 'text') && (
+                        <p className="italic">"{testimonial.content}"</p>
+                    )
+                )}
+            </div>
             <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-xs font-bold text-white uppercase">
                     {testimonial.userDetails.name.charAt(0)}
                 </div>
                 <div>
                     <p className="font-medium text-sm">{testimonial.userDetails.name}</p>
-                    <p className="text-xs text-muted-foreground">{testimonial.userDetails.email}</p>
+                    <p className="text-xs text-muted-foreground">
+                        {testimonial.userDetails.designation ? `${testimonial.userDetails.designation} • ` : ''}
+                        {testimonial.userDetails.email}
+                    </p>
                 </div>
             </div>
         </div>

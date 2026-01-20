@@ -4,9 +4,14 @@ import Testimonial from "@/models/Testimonial";
 
 export async function POST(req: Request) {
     try {
-        const { spaceId, type, content, rating, name, email } = await req.json();
+        const body = await req.json();
+        let { spaceId, rating, name, email, designation, textContent, mediaUrl, mediaType } = body;
 
-        if (!spaceId || !content || !rating || !name) {
+        // Resilience: fallback to legacy field name if new ones are missing
+        if (!textContent && mediaType === 'none' && body.content) textContent = body.content;
+        if (!mediaUrl && mediaType !== 'none' && body.content) mediaUrl = body.content;
+
+        if (!spaceId || !rating || !name) {
             return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
         }
 
@@ -14,12 +19,18 @@ export async function POST(req: Request) {
 
         const testimonial = await Testimonial.create({
             spaceId,
-            type,
-            content,
+            textContent: textContent || "",
+            mediaUrl: mediaUrl || "",
+            mediaType: mediaType || 'none',
             rating,
+            // Maintaing compatibility: type reflects the media if present, otherwise 'text'
+            type: mediaType && mediaType !== 'none' ? mediaType : 'text',
+            // content field stores media URL if media exists, otherwise textContent (legacy fallback)
+            content: (mediaType && mediaType !== 'none' ? (mediaUrl || "") : (textContent || "")).trim(),
             userDetails: {
                 name,
                 email,
+                designation,
             },
         });
 
