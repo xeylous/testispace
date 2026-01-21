@@ -48,7 +48,7 @@ export default function NewSpacePage() {
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-white"
+                    className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-foreground"
                     placeholder="e.g. TestiSpace Feedback"
                     required
                 />
@@ -60,7 +60,7 @@ export default function NewSpacePage() {
                     type="text"
                     value={headerTitle}
                     onChange={(e) => setHeaderTitle(e.target.value)}
-                    className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-white"
+                    className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-foreground"
                     placeholder="Share your experience"
                 />
             </div>
@@ -70,7 +70,7 @@ export default function NewSpacePage() {
                 <textarea
                     value={customMessage}
                     onChange={(e) => setCustomMessage(e.target.value)}
-                    className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-white min-h-[100px]"
+                    className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-foreground min-h-[100px]"
                     placeholder="We would love to hear from you!"
                 />
             </div>

@@ -48,7 +48,7 @@ export default function LoginPage() {
                 setEmail(e.target.value);
                 if (error) setError("");
               }}
-              className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-white"
+              className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-foreground"
               placeholder="you@example.com"
               required
             />
@@ -62,7 +62,7 @@ export default function LoginPage() {
                 setPassword(e.target.value);
                 if (error) setError("");
               }}
-              className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-white"
+              className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-foreground"
               required
             />
         </div>

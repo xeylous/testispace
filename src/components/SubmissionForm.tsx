@@ -149,7 +149,7 @@ export default function SubmissionForm({ spaceId }: { spaceId: string }) {
         <textarea
           value={textContent}
           onChange={(e) => setTextContent(e.target.value)}
-          className="w-full bg-input border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-ring outline-none transition-all text-white min-h-[120px]"
+          className="w-full bg-input border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-ring outline-none transition-all text-foreground min-h-[120px]"
           placeholder="Tell us what you liked..."
           required={!file}
         />
@@ -212,7 +212,7 @@ export default function SubmissionForm({ spaceId }: { spaceId: string }) {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-white"
+                className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-foreground"
                 placeholder="John Doe"
                 required
                 />
@@ -223,7 +223,7 @@ export default function SubmissionForm({ spaceId }: { spaceId: string }) {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-white"
+                className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-foreground"
                 placeholder="john@example.com"
                 />
             </div>
@@ -234,7 +234,7 @@ export default function SubmissionForm({ spaceId }: { spaceId: string }) {
             type="text"
             value={designation}
             onChange={(e) => setDesignation(e.target.value)}
-            className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-white"
+            className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-foreground"
             placeholder="e.g. CEO at Company"
             />
         </div>
