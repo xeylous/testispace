@@ -12,40 +12,41 @@ export async function POST(req: Request) {
         }
 
         await connectDB();
-        const user = await User.findOne({ email });
 
-        if (!user) {
-            return NextResponse.json({ message: "User not found" }, { status: 404 });
+        // Check if user already exists (double check in case race condition or retry)
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return NextResponse.json({ message: "User already registered" }, { status: 400 });
         }
 
-        if (user.isVerified) {
-            return NextResponse.json({ message: "User already verified" }, { status: 200 });
-        }
+        // Get temp data from Redis
+        const tempUserDataString = await redis.get(`otp:${email}`);
 
-        // Get OTP from Redis
-        const storedOtp = await redis.get(`otp:${email}`);
-
-        if (!storedOtp) {
+        if (!tempUserDataString) {
             console.log("Verify error: OTP expired or not found in Redis");
             return NextResponse.json({ message: "OTP has expired or is invalid" }, { status: 400 });
         }
 
-        if (storedOtp !== otp) {
-            console.log(`Verify error: OTP mismatch. Expected ${storedOtp}, Got ${otp}`);
+        const tempUserData = JSON.parse(tempUserDataString);
+
+        if (tempUserData.otp !== otp) {
+            console.log(`Verify error: OTP mismatch. Expected ${tempUserData.otp}, Got ${otp}`);
             return NextResponse.json({ message: "Invalid OTP" }, { status: 400 });
         }
 
-        // Verify user
-        user.isVerified = true;
-        // Clean up legacy fields just in case
-        user.otp = undefined;
-        user.otpExpires = undefined;
-        await user.save();
+        // Create user from temp data
+        const newUser = await User.create({
+            name: tempUserData.name,
+            email: tempUserData.email,
+            password: tempUserData.password,
+            provider: "credentials",
+            isVerified: true
+        });
 
         // Delete from Redis
         await redis.del(`otp:${email}`);
 
-        return NextResponse.json({ message: "Email verified successfully" }, { status: 200 });
+        return NextResponse.json({ message: "Email verified successfully", userId: newUser._id }, { status: 200 });
 
     } catch (error) {
         console.error(error);

@@ -26,30 +26,25 @@ export async function POST(req: Request) {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
 
-        const user = await User.create({
+        // Store OTP and temp user data in Redis for 10 minutes
+        const tempUserData = {
             name,
             email,
             password: hashedPassword,
-            provider: "credentials",
-            isVerified: false
-        });
+            otp
+        };
 
-        // Store OTP in Redis for 10 minutes
-        await redis.set(`otp:${email}`, otp, "EX", 600);
+        await redis.set(`otp:${email}`, JSON.stringify(tempUserData), "EX", 600);
 
         // Send OTP email
-        // We don't await this to speed up response, or we can await to ensure it sent
         try {
             await sendOTP(email, otp);
-            console.log(`OTP sent to ${email}: ${otp}`); // For dev/debugging
+            console.log(`OTP sent to ${email}: ${otp}`);
         } catch (mailError) {
             console.error("Failed to send OTP email:", mailError);
-            // Optionally delete user if email fails
-            // await User.deleteOne({ _id: user._id });
-            // return NextResponse.json({ message: "Failed to send verification email" }, { status: 500 });
         }
 
-        return NextResponse.json({ message: "User registered. Please verify your email.", userId: user._id }, { status: 201 });
+        return NextResponse.json({ message: "OTP sent. Please verify your email." }, { status: 200 });
     } catch (error) {
         console.error(error);
         return NextResponse.json({ message: "Something went wrong" }, { status: 500 });
