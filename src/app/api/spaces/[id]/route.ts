@@ -5,14 +5,14 @@ import connectDB from "@/lib/db";
 import Space from "@/models/Space";
 import Testimonial from "@/models/Testimonial";
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
     const session = await getServerSession(authOptions);
     if (!session || !session.user) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     try {
-        const { id } = params;
+        const { id } = await params;
         const { name, headerTitle, customMessage } = await req.json();
 
         await connectDB();
@@ -37,14 +37,14 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     const session = await getServerSession(authOptions);
     if (!session || !session.user) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     try {
-        const { id } = params;
+        const { id } = await params;
         await connectDB();
 
         // @ts-ignore
