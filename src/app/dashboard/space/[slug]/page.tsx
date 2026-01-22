@@ -80,9 +80,12 @@ export default async function SpaceManagementPage({ params }: { params: any }) {
             </a>
         </div>
         <div className="flex gap-4">
-             <button className="bg-secondary/20 text-secondary border border-secondary/50 px-4 py-2 rounded-lg text-sm font-medium hover:bg-secondary/30 transition-colors">
+             <Link 
+                href={`/dashboard/space/${space.slug}/settings`}
+                className="bg-secondary/50 text-secondary-foreground border border-secondary-foreground/20 px-4 py-2 rounded-lg text-sm font-medium hover:bg-secondary/70 transition-colors flex items-center gap-2"
+             >
                  Settings
-             </button>
+             </Link>
         </div>
       </div>
 
