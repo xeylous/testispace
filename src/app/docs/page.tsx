@@ -15,7 +15,7 @@ export default function DocsPage() {
       content: (
         <div className="space-y-4">
           <p className="text-lg text-muted-foreground leading-relaxed">
-            TestiSpace is an all-in-one platform designed for modern SaaS businesses to collect, manage, and embed video and text testimonials seamlessly. Built with a futuristic "Cyberpunk Enterprise" aesthetic, it combines powerful functionality with stunning visuals.
+            TestiSpace is an all-in-one platform designed for modern SaaS businesses to collect, manage, and embed video and text testimonials seamlessly. Built with a futuristic Space theme aesthetic, it combines powerful functionality with stunning visuals.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
             <FeatureCard title="Futuristic UI/UX" desc="Immersive dark mode design with glassmorphism and neon accents." />
@@ -34,7 +34,7 @@ export default function DocsPage() {
         <>
             <div className="space-y-6">
                 <p className="text-muted-foreground">TestiSpace leverages a serverless architecture designed for scalability and performance.</p>
-                <div className="bg-black/40 border border-white/10 rounded-xl p-6 relative overflow-hidden">
+                <div className="bg-secondary/30 border border-border rounded-xl p-6 relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-10">
                         <Server size={120} />
                     </div>
@@ -159,7 +159,7 @@ function ArchItem({ title, desc }: { title: string, desc: string }) {
         <li className="flex gap-3">
             <div className="mt-1.5 w-2 h-2 rounded-full bg-primary flex-shrink-0" />
             <div>
-                <span className="font-bold text-white block">{title}</span>
+                <span className="font-bold text-foreground block">{title}</span>
                 <span className="text-sm text-muted-foreground">{desc}</span>
             </div>
         </li>
@@ -168,8 +168,8 @@ function ArchItem({ title, desc }: { title: string, desc: string }) {
 
 function TechItem({ name, desc }: { name: string, desc: string }) {
     return (
-        <div className="bg-white/5 border border-white/10 p-3 rounded-lg text-center hover:border-primary/50 transition-colors cursor-default">
-            <div className="font-bold text-white">{name}</div>
+        <div className="bg-secondary/20 border border-border p-3 rounded-lg text-center hover:border-primary/50 transition-colors cursor-default">
+            <div className="font-bold text-foreground">{name}</div>
             <div className="text-xs text-muted-foreground">{desc}</div>
         </div>
     )
