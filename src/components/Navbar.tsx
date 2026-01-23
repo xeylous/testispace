@@ -35,7 +35,7 @@ export default function Navbar() {
                 </span>
                 <button
                   onClick={() => signOut({ callbackUrl: "/" })}
-                  className="flex items-center gap-2 bg-destructive/10 hover:bg-destructive/20 text-destructive px-3 py-2 rounded-full text-sm font-medium transition-all"
+                  className="flex items-center gap-2 bg-destructive/10 hover:bg-destructive/20 text-destructive px-3 py-2 rounded-full text-sm font-medium transition-all cursor-pointer"
                 >
                   <LogOut size={16} />
                   <span className="hidden sm:inline">Logout</span>
