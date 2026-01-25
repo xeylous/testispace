@@ -19,9 +19,11 @@ export interface ISpace extends Document {
         backgroundColor?: string;
         textColor?: string;
         accentColor?: string;
+        starColor?: string;
         fontFamily?: string;
         borderRadius?: string;
     };
+    selectedTestimonials: mongoose.Types.ObjectId[];
 }
 
 const SpaceSchema = new Schema<ISpace>({
@@ -39,7 +41,8 @@ const SpaceSchema = new Schema<ISpace>({
     // Embed customization
     embedLayout: { type: String, enum: ['grid', 'carousel', 'masonry', 'list'], default: 'grid' },
     cardStyle: { type: String, enum: ['modern', 'minimal', 'classic', 'gradient'], default: 'modern' },
-    customStyles: { type: Schema.Types.Mixed, default: {} }
+    customStyles: { type: Schema.Types.Mixed, default: {} },
+    selectedTestimonials: { type: [{ type: Schema.Types.ObjectId, ref: 'Testimonial' }], default: [] }
 });
 
 export default mongoose.models.Space || mongoose.model<ISpace>('Space', SpaceSchema);

@@ -23,10 +23,18 @@ interface Testimonial {
 interface TestimonialsTableProps {
   testimonials: Testimonial[];
   baseUrl: string;
+  spaceId: string;
+  initialSelectedTestimonials: string[];
 }
 
-export default function TestimonialsTable({ testimonials: initialTestimonials, baseUrl }: TestimonialsTableProps) {
+export default function TestimonialsTable({ 
+  testimonials: initialTestimonials, 
+  baseUrl, 
+  spaceId, 
+  initialSelectedTestimonials 
+}: TestimonialsTableProps) {
   const [testimonials, setTestimonials] = useState(initialTestimonials);
+  const [selectedIds, setSelectedIds] = useState<string[]>(initialSelectedTestimonials);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -60,6 +68,32 @@ export default function TestimonialsTable({ testimonials: initialTestimonials, b
       console.error("Action failed:", err);
     } finally {
       setActionLoading(null);
+    }
+  };
+
+  const handleToggleSelect = async (id: string) => {
+    const isSelected = selectedIds.includes(id);
+    const newSelected = isSelected 
+      ? selectedIds.filter(sid => sid !== id)
+      : [...selectedIds, id];
+    
+    setSelectedIds(newSelected);
+
+    try {
+      const res = await fetch(`/api/spaces/${spaceId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ selectedTestimonials: newSelected }),
+      });
+
+      if (!res.ok) {
+        // Rollback on failure
+        setSelectedIds(selectedIds);
+        alert("Failed to update selection");
+      }
+    } catch (err) {
+      console.error("Selection update failed:", err);
+      setSelectedIds(selectedIds);
     }
   };
 
@@ -106,6 +140,7 @@ export default function TestimonialsTable({ testimonials: initialTestimonials, b
         <thead>
           <tr className="border-b border-border text-left text-xs uppercase text-muted-foreground">
             <th className="p-4 font-semibold">From</th>
+            <th className="p-4 font-semibold">Select</th>
             <th className="p-4 font-semibold">Content Type</th>
             <th className="p-4 font-semibold">Rating</th>
             <th className="p-4 font-semibold">Status</th>
@@ -131,6 +166,16 @@ export default function TestimonialsTable({ testimonials: initialTestimonials, b
                         <p className="text-xs text-muted-foreground">{t.userDetails.designation}</p>
                       )}
                     </div>
+                  </div>
+                </td>
+                <td className="p-4">
+                  <div className="flex items-center justify-center" onClick={e => e.stopPropagation()}>
+                    <input 
+                      type="checkbox" 
+                      checked={selectedIds.includes(t._id)}
+                      onChange={() => handleToggleSelect(t._id)}
+                      className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                    />
                   </div>
                 </td>
                 <td className="p-4">
@@ -218,12 +263,12 @@ export default function TestimonialsTable({ testimonials: initialTestimonials, b
                         handleCopyEmbed(t._id);
                       }}
                       className="inline-flex items-center gap-1 text-xs font-medium bg-primary/20 hover:bg-primary/30 text-primary px-3 py-1.5 rounded-lg transition-colors"
-                      title="Copy individual embed code"
+                      title="Copy individual embed code (Single layout)"
                     >
                       {copiedId === t._id ? (
                         <><Check size={12} /> Copied!</>
                       ) : (
-                        <><Code size={12} /> Embed</>
+                        <><Code size={12} /> Single</>
                       )}
                     </button>
                   ) : (

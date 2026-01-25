@@ -20,18 +20,23 @@ export async function GET(req: Request, { params }: { params: any }) {
         }
 
         await connectDB();
-        const [space, testimonials] = await Promise.all([
-            Space.findById(spaceId).select('name embedLayout cardStyle customStyles'),
-            Testimonial.find({
-                spaceId,
-                isApproved: true,
-                isArchived: false
-            }).sort({ createdAt: -1 })
-        ]);
+        const space = await Space.findById(spaceId).select('name embedLayout cardStyle customStyles selectedTestimonials');
 
         if (!space) {
             return NextResponse.json({ message: "Space not found" }, { status: 404 });
         }
+
+        const query: any = {
+            spaceId,
+            isApproved: true,
+            isArchived: false
+        };
+
+        if (space.selectedTestimonials && space.selectedTestimonials.length > 0) {
+            query._id = { $in: space.selectedTestimonials };
+        }
+
+        const testimonials = await Testimonial.find(query).sort({ createdAt: -1 });
 
         const data = {
             space: {

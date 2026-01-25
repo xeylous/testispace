@@ -34,6 +34,7 @@ export default function EmbedCustomizer({
     backgroundColor: currentCustomStyles.backgroundColor || '#1a1a1a',
     textColor: currentCustomStyles.textColor || '#ffffff',
     accentColor: currentCustomStyles.accentColor || '#8b5cf6',
+    starColor: currentCustomStyles.starColor || '#eab308',
     fontFamily: currentCustomStyles.fontFamily || 'Inter',
     borderRadius: currentCustomStyles.borderRadius || '12'
   });
@@ -45,9 +46,7 @@ export default function EmbedCustomizer({
       html: `<!-- Add this to your HTML -->
 <script 
   src="${baseUrl}/embed.js" 
-  data-space-id="${spaceId}" 
-  data-layout="${selectedLayout}"
-  data-style="${selectedStyle}">
+  data-space-id="${spaceId}">
 </script>`,
       
       react: `// Install: npm install @testispace/react-embed
@@ -58,8 +57,6 @@ function MyPage() {
   return (
     <TestiSpaceEmbed 
       spaceId="${spaceId}"
-      layout="${selectedLayout}"
-      cardStyle="${selectedStyle}"
     />
   );
 }`,
@@ -304,6 +301,15 @@ def testimonials():
                   type="color"
                   value={customStyles.accentColor}
                   onChange={(e) => setCustomStyles({...customStyles, accentColor: e.target.value})}
+                  className="w-full h-12 rounded-lg border border-border cursor-pointer"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Star Color</label>
+                <input
+                  type="color"
+                  value={customStyles.starColor}
+                  onChange={(e) => setCustomStyles({...customStyles, starColor: e.target.value})}
                   className="w-full h-12 rounded-lg border border-border cursor-pointer"
                 />
               </div>
