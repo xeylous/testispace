@@ -97,13 +97,13 @@ export default function LoginPage() {
       <div className="flex gap-4">
         <button
           onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-          className="w-full glass hover:bg-white/10 p-2 rounded-lg flex items-center justify-center transition-colors border border-white/10"
+          className="w-full glass hover:bg-white/10 p-2 rounded-lg flex items-center justify-center transition-colors border border-white/10 cursor-pointer"
         >
           Google
         </button>
         <button
           onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
-          className="w-full glass hover:bg-white/10 p-2 rounded-lg flex items-center justify-center transition-colors border border-white/10"
+          className="w-full glass hover:bg-white/10 p-2 rounded-lg flex items-center justify-center transition-colors border border-white/10 cursor-pointer"
         >
           GitHub
         </button>
