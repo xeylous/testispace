@@ -50,6 +50,7 @@
             backgroundColor: custom.backgroundColor || '#1e1b4b',
             textColor: custom.textColor || '#f8fafc',
             accentColor: custom.accentColor || '#8b5cf6',
+            starColor: custom.starColor || '#eab308',
             fontFamily: custom.fontFamily || '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
             borderRadius: custom.borderRadius ? `${custom.borderRadius}px` : '16px'
         };
@@ -150,7 +151,7 @@
             }
 
             card.innerHTML = `
-                <div class="ts-header">${'★'.repeat(t.rating)}</div>
+                <div class="ts-header" style="color: ${config.starColor}">${'★'.repeat(t.rating)}</div>
                 <div class="ts-content">
                     ${textContent ? `<div class="ts-text">"${textContent}"</div>` : ''}
                     ${mediaHtml}

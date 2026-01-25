@@ -13,7 +13,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
     try {
         const { id } = await params;
-        const { name, headerTitle, customMessage, embedLayout, cardStyle, customStyles } = await req.json();
+        const { name, headerTitle, customMessage, embedLayout, cardStyle, customStyles, selectedTestimonials } = await req.json();
 
         await connectDB();
 
@@ -30,6 +30,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         if (embedLayout) space.embedLayout = embedLayout;
         if (cardStyle) space.cardStyle = cardStyle;
         if (customStyles) space.customStyles = customStyles;
+        if (selectedTestimonials !== undefined) space.selectedTestimonials = selectedTestimonials;
 
         await space.save();
 

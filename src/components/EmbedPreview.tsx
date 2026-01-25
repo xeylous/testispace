@@ -9,6 +9,7 @@ interface EmbedPreviewProps {
     backgroundColor: string;
     textColor: string;
     accentColor: string;
+    starColor: string;
     fontFamily: string;
     borderRadius: string;
   };
@@ -127,7 +128,7 @@ export default function EmbedPreview({ layout, cardStyle, customStyles }: EmbedP
             
             <div className="flex gap-1 mb-3">
               {[...Array(testimonial.rating)].map((_, i) => (
-                <Star key={i} size={16} fill={customStyles.accentColor} color={customStyles.accentColor} />
+                <Star key={i} size={16} fill={customStyles.starColor} color={customStyles.starColor} />
               ))}
             </div>
             

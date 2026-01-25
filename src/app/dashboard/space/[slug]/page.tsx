@@ -58,6 +58,7 @@ async function getSpaceData(slug: string) {
       embedLayout: space.embedLayout || 'grid',
       cardStyle: space.cardStyle || 'modern',
       customStyles: space.customStyles || {},
+      selectedTestimonials: (space.selectedTestimonials || []).map((id: any) => id.toString()),
     }, 
     testimonials: plainTestimonials 
   };
@@ -127,7 +128,12 @@ export default async function SpaceManagementPage({ params }: { params: any }) {
         <div className="p-6 border-b border-border">
           <h2 className="text-xl font-bold">All Testimonials</h2>
         </div>
-        <TestimonialsTable testimonials={testimonials} baseUrl={baseUrl} />
+        <TestimonialsTable 
+          testimonials={testimonials} 
+          baseUrl={baseUrl} 
+          spaceId={space._id}
+          initialSelectedTestimonials={space.selectedTestimonials}
+        />
       </div>
     </div>
   );
