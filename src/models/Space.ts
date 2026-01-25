@@ -11,6 +11,17 @@ export interface ISpace extends Document {
     questions: string[];
     status: 'active' | 'archived';
     createdAt: Date;
+
+    // Embed customization fields
+    embedLayout: 'grid' | 'carousel' | 'masonry' | 'list';
+    cardStyle: 'modern' | 'minimal' | 'classic' | 'gradient';
+    customStyles: {
+        backgroundColor?: string;
+        textColor?: string;
+        accentColor?: string;
+        fontFamily?: string;
+        borderRadius?: string;
+    };
 }
 
 const SpaceSchema = new Schema<ISpace>({
@@ -24,6 +35,11 @@ const SpaceSchema = new Schema<ISpace>({
     questions: { type: [String], default: ['What did you like the most?', 'How did it help you?'] },
     status: { type: String, enum: ['active', 'archived'], default: 'active' },
     createdAt: { type: Date, default: Date.now },
+
+    // Embed customization
+    embedLayout: { type: String, enum: ['grid', 'carousel', 'masonry', 'list'], default: 'grid' },
+    cardStyle: { type: String, enum: ['modern', 'minimal', 'classic', 'gradient'], default: 'modern' },
+    customStyles: { type: Schema.Types.Mixed, default: {} }
 });
 
 export default mongoose.models.Space || mongoose.model<ISpace>('Space', SpaceSchema);

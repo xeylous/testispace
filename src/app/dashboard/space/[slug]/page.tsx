@@ -6,6 +6,7 @@ import connectDB from "@/lib/db";
 import Space from "@/models/Space";
 import Testimonial from "@/models/Testimonial";
 import TestimonialsTable from "@/components/TestimonialsTable";
+import EmbedCustomizer from "@/components/EmbedCustomizer";
 
 async function getSpaceData(slug: string) {
   const session = await getServerSession(authOptions);
@@ -54,6 +55,9 @@ async function getSpaceData(slug: string) {
       _id: space._id.toString(),
       name: space.name,
       slug: space.slug,
+      embedLayout: space.embedLayout || 'grid',
+      cardStyle: space.cardStyle || 'modern',
+      customStyles: space.customStyles || {},
     }, 
     testimonials: plainTestimonials 
   };
@@ -109,16 +113,14 @@ export default async function SpaceManagementPage({ params }: { params: any }) {
         </div>
       </div>
 
-      {/* Embed Code Section */}
-      <div className="glass-card p-6 rounded-xl mb-8 border border-border">
-        <h2 className="text-xl font-bold mb-4">Embed All Testimonials</h2>
-        <p className="text-muted-foreground mb-4">Copy and paste this code to embed all approved testimonials.</p>
-        <div className="bg-black/50 p-4 rounded-lg font-mono text-xs text-green-400 overflow-x-auto">
-            <code>
-                &lt;script src=&quot;{baseUrl}/embed.js&quot; data-space-id=&quot;{space._id}&quot; data-layout=&quot;grid&quot;&gt;&lt;/script&gt;
-            </code>
-        </div>
-      </div>
+      {/* Embed Customization Section */}
+      <EmbedCustomizer 
+        spaceId={space._id} 
+        baseUrl={baseUrl}
+        currentLayout={space.embedLayout}
+        currentStyle={space.cardStyle}
+        currentCustomStyles={space.customStyles}
+      />
 
       {/* Testimonials Table */}
       <div className="glass-card rounded-xl border border-border overflow-hidden">
