@@ -5,6 +5,7 @@ import { authOptions } from "../../../api/auth/[...nextauth]/route";
 import connectDB from "@/lib/db";
 import Space from "@/models/Space";
 import Testimonial from "@/models/Testimonial";
+import TestimonialsTable from "@/components/TestimonialsTable"; // Import added back
 
 async function getSpaceStats(slug: string) {
   const session = await getServerSession(authOptions);
@@ -15,22 +16,53 @@ async function getSpaceStats(slug: string) {
   const space = await Space.findOne({ slug, ownerId: session.user.id });
   if (!space) return null;
 
-  const testimonials = await Testimonial.find({ spaceId: space._id }).lean();
+  const testimonials = await Testimonial.find({ spaceId: space._id }).sort({ createdAt: -1 }).lean();
   
+  // Convert to plain objects
+  const plainTestimonials = testimonials.map((t: any) => {
+    const rawMediaType = t.mediaType || t.type;
+    const isMedia = rawMediaType === 'image' || rawMediaType === 'video';
+    
+    return {
+      _id: t._id.toString(),
+      textContent: t.textContent || (!isMedia ? t.content : ""),
+      mediaUrl: t.mediaUrl || (isMedia ? t.content : ""),
+      mediaType: isMedia ? rawMediaType : 'none',
+      type: t.type,
+      content: t.content,
+      rating: t.rating,
+      userDetails: {
+        name: t.userDetails?.name || "Anonymous",
+        email: t.userDetails?.email || '',
+        designation: t.userDetails?.designation || '',
+        avatar: t.userDetails?.avatar || '',
+      },
+      isApproved: t.isApproved,
+      isArchived: t.isArchived,
+      createdAt: t.createdAt ? t.createdAt.toISOString() : new Date().toISOString(),
+    };
+  });
+
   return { 
-    total: testimonials.length,
-    approved: testimonials.filter((t: any) => t.isApproved).length,
-    media: testimonials.filter((t: any) => t.mediaType !== 'none' && t.mediaType).length,
-    text: testimonials.filter((t: any) => !t.mediaType || t.mediaType === 'none').length,
-    latestTestimonials: testimonials.slice(0, 5) // Maybe for a quick list later
+    space: { _id: space._id.toString() },
+    testimonials: plainTestimonials,
+    stats: {
+        total: testimonials.length,
+        approved: testimonials.filter((t: any) => t.isApproved).length,
+        media: testimonials.filter((t: any) => t.mediaType !== 'none' && t.mediaType).length,
+        text: testimonials.filter((t: any) => !t.mediaType || t.mediaType === 'none').length,
+    }
   };
 }
 
 export default async function SpaceOverviewPage({ params }: { params: any }) {
   const { slug } = await params;
-  const stats = await getSpaceStats(slug);
+  const data = await getSpaceStats(slug);
 
-  if (!stats) return notFound();
+  if (!data) return notFound();
+  
+  const { space, testimonials, stats } = data;
+  const baseUrl = process.env.NEXTAUTH_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
   
   return (
     <div className="space-y-8 mt-6">
@@ -59,18 +91,23 @@ export default async function SpaceOverviewPage({ params }: { params: any }) {
         </div>
       </div>
 
-      <div className="p-8 border border-border rounded-xl bg-background/50 text-center space-y-4">
-           <h3 className="text-lg font-medium">Ready to showcase your testimonials?</h3>
-           <p className="text-muted-foreground max-w-lg mx-auto">
-               Head over to the <span className="text-primary font-bold">Wall of Love</span> tab to customize your widget and select the best testimonials to display on your website.
-           </p>
-           <Link 
-             href={`/dashboard/space/${slug}/embed`}
-             className="inline-block bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-2 rounded-lg font-medium transition-colors"
-           >
-             Go to Wall of Love
-           </Link>
-      </div>
+     {/* Recent Testimonials Table */}
+     <div className="glass-card rounded-xl border border-border overflow-hidden">
+        <div className="p-6 border-b border-border flex justify-between items-center">
+            <h2 className="text-xl font-bold">Recent Testimonials</h2>
+            <Link href={`/dashboard/space/${slug}/embed`} className="text-sm text-primary hover:underline">
+                Manage Selection &rarr;
+            </Link>
+        </div>
+        <TestimonialsTable 
+            testimonials={testimonials} 
+            baseUrl={baseUrl} 
+            spaceId={space._id}
+            itemsPerPage={5}
+            showSelection={false}
+            showEmbedCode={false} // Hiding specific embed code as requested for overview logic
+        />
+     </div>
     </div>
   );
 }

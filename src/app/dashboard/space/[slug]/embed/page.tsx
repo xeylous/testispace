@@ -18,7 +18,7 @@ async function getSpaceEmbedData(slug: string) {
 
   const testimonials = await Testimonial.find({ spaceId: space._id }).sort({ createdAt: -1 }).lean();
   
-  // Convert to plain objects (reusing logic from original page)
+  // Convert to plain objects (reusing logic)
   const plainTestimonials = testimonials.map((t: any) => {
     const rawMediaType = t.mediaType || t.type;
     const isMedia = rawMediaType === 'image' || rawMediaType === 'video';
@@ -68,7 +68,7 @@ export default async function WallOfLovePage({ params }: { params: any }) {
         <div className="space-y-8 mt-6">
             <div>
                 <h2 className="text-xl font-bold mb-2">Configure Your Wall of Love</h2>
-                <p className="text-muted-foreground">Customize how testimonials appear and select the ones you want to showcase.</p>
+                <p className="text-muted-foreground">Customize how testimonials appear and select the ones you want to showcase. Use the toggle below to select testimonials for your widget.</p>
             </div>
 
             {/* Embed Customization */}
@@ -83,13 +83,16 @@ export default async function WallOfLovePage({ params }: { params: any }) {
             {/* Testimonials Selection */}
             <div className="glass-card rounded-xl border border-border overflow-hidden">
                 <div className="p-6 border-b border-border">
-                    <h2 className="text-xl font-bold">Manage Testimonials</h2>
+                    <h2 className="text-xl font-bold">Manage Selection</h2>
                 </div>
                 <TestimonialsTable 
                     testimonials={testimonials} 
                     baseUrl={baseUrl} 
                     spaceId={space._id}
                     initialSelectedTestimonials={space.selectedTestimonials}
+                    itemsPerPage={15}
+                    showSelection={true}
+                    showEmbedCode={false} // Hiding individual embed code as requested
                 />
             </div>
         </div>
