@@ -5,7 +5,7 @@ import connectDB from "@/lib/db";
 import Space from "@/models/Space";
 import Testimonial from "@/models/Testimonial";
 import TestimonialsTable from "@/components/TestimonialsTable";
-import EmbedCustomizer from "@/components/EmbedCustomizer";
+
 
 async function getSpaceEmbedData(slug: string) {
   const session = await getServerSession(authOptions);
@@ -70,15 +70,6 @@ export default async function WallOfLovePage({ params }: { params: any }) {
                 <h2 className="text-xl font-bold mb-2">Configure Your Wall of Love</h2>
                 <p className="text-muted-foreground">Customize how testimonials appear and select the ones you want to showcase. Use the toggle below to select testimonials for your widget.</p>
             </div>
-
-            {/* Embed Customization */}
-            <EmbedCustomizer 
-                spaceId={space._id} 
-                baseUrl={baseUrl}
-                currentLayout={space.embedLayout}
-                currentStyle={space.cardStyle}
-                currentCustomStyles={space.customStyles}
-            />
 
             {/* Testimonials Selection */}
             <div className="glass-card rounded-xl border border-border overflow-hidden">

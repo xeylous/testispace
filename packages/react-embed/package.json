@@ -1,0 +1,29 @@
+{
+    "name": "@testispace/react-embed",
+    "version": "1.0.0",
+    "description": "official React component for TestiSpace testimonials",
+    "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsup src/index.tsx --format cjs,esm --dts",
+        "prepublishOnly": "npm run build"
+    },
+    "keywords": [
+        "react",
+        "testimonials",
+        "testispace",
+        "embed"
+    ],
+    "author": "TestiSpace",
+    "license": "MIT",
+    "peerDependencies": {
+        "react": ">=16"
+    },
+    "devDependencies": {
+        "react": "^18.0.0",
+        "tsup": "^8.0.0",
+        "typescript": "^5.0.0",
+        "@types/react": "^18.0.0"
+    }
+}

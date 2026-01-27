@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Star, Upload, Check } from "lucide-react";
+import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
 
 export default function SubmissionForm({ spaceId }: { spaceId: string }) {
@@ -103,6 +104,12 @@ export default function SubmissionForm({ spaceId }: { spaceId: string }) {
 
       if (res.ok) {
         setSuccess(true);
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#8b5cf6', '#a78bfa', '#c4b5fd', '#ffffff']
+        });
       } else {
         alert("Failed to submit testimonial");
       }

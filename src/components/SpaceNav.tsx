@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Heart, Settings } from "lucide-react";
+import { LayoutGrid, Heart, Settings, BarChart3, Code, Palette } from "lucide-react";
 
 export default function SpaceNav({ slug }: { slug: string }) {
   const pathname = usePathname();
@@ -27,6 +27,21 @@ export default function SpaceNav({ slug }: { slug: string }) {
       name: "Wall of Love",
       href: `/dashboard/space/${slug}/embed`,
       icon: <Heart size={18} />,
+    },
+    {
+      name: "Analytics",
+      href: `/dashboard/space/${slug}/analytics`,
+      icon: <BarChart3 size={18} />,
+    },
+    {
+      name: "Integration",
+      href: `/dashboard/space/${slug}/integration`,
+      icon: <Code size={18} />,
+    },
+    {
+      name: "Customization",
+      href: `/dashboard/space/${slug}/customization`,
+      icon: <Palette size={18} />,
     },
     {
       name: "Settings",

@@ -180,7 +180,13 @@ export default function TestimonialsTable({
     <div>
         {/* Filters and Controls */}
         <div className="p-4 border-b border-border flex flex-col md:flex-row gap-4 justify-between items-center">
-            <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+            <div className="flex items-center gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                {showSelection && (
+                    <div className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-medium whitespace-nowrap border border-primary/20">
+                        {selectedIds.length} Selected
+                    </div>
+                )}
+                <div className="flex gap-2">
                 {(['all', 'approved', 'pending', 'archived'] as const).map(status => (
                     <button
                         key={status}
@@ -195,6 +201,7 @@ export default function TestimonialsTable({
                     </button>
                 ))}
             </div>
+        </div>
             
             <div className="flex gap-2 w-full md:w-auto items-center">
                  <div className="relative">
@@ -236,7 +243,11 @@ export default function TestimonialsTable({
             {currentTestimonials.map((t) => (
                 <React.Fragment key={t._id}>
                 <tr 
-                    className="border-b border-border/50 hover:bg-white/5 transition-colors cursor-pointer"
+                    className={`border-b transition-colors cursor-pointer ${
+                        selectedIds.includes(t._id) 
+                            ? 'bg-primary/5 border-primary/50' 
+                            : 'border-border/50 hover:bg-white/5'
+                    }`}
                     onClick={() => setExpandedId(expandedId === t._id ? null : t._id)}
                 >
                     <td className="p-4">
