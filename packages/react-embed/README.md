@@ -1,17 +1,17 @@
-# @testispace/react-embed
+# testispace-react-embed
 
 Official React component for embedding TestiSpace testimonials on your website.
 
 ## Installation
 
 ```bash
-npm install @testispace/react-embed
+npm install testispace-react-embed
 ```
 
 ## Usage
 
 ```tsx
-import TestiSpaceEmbed from '@testispace/react-embed';
+import TestiSpaceEmbed from 'testispace-react-embed';
 
 function App() {
   return (
