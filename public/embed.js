@@ -37,6 +37,15 @@
             const finalStyle = styleOverride || (space && space.cardStyle) || 'modern';
             const customization = (space && space.customStyles) || {};
 
+            // Track View
+            if (spaceId) {
+                fetch(`${baseUrl}/api/track`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ spaceId, event: 'view' })
+                }).catch(err => console.error('Tracking Error:', err));
+            }
+
             renderWidget(container, testimonials, finalLayout, finalStyle, customization);
         })
         .catch(err => console.error('TestiSpace Embed Error:', err));
@@ -45,10 +54,17 @@
         // Create Shadow DOM for isolation
         const shadow = container.attachShadow({ mode: 'open' });
 
+        // Auto-theme detection
+        const autoTheme = container.getAttribute('data-theme') === 'auto' || custom.theme === 'auto';
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        const defaultBg = autoTheme ? (prefersDark ? '#1e1b4b' : '#ffffff') : '#1e1b4b';
+        const defaultText = autoTheme ? (prefersDark ? '#f8fafc' : '#0f172a') : '#f8fafc';
+
         // Configuration mapping
         const config = {
-            backgroundColor: custom.backgroundColor || '#1e1b4b',
-            textColor: custom.textColor || '#f8fafc',
+            backgroundColor: custom.backgroundColor || defaultBg,
+            textColor: custom.textColor || defaultText,
             accentColor: custom.accentColor || '#8b5cf6',
             starColor: custom.starColor || '#eab308',
             fontFamily: custom.fontFamily || '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',

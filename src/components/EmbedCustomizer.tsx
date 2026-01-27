@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { Copy, Check, Code, Palette, LayoutGrid, Eye } from "lucide-react";
+import { Copy, Check, Palette, LayoutGrid, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import EmbedPreview from "./EmbedPreview";
 
@@ -23,9 +21,7 @@ export default function EmbedCustomizer({
   currentCustomStyles = {}
 }: EmbedCustomizerProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'code' | 'layout' | 'customize'>('code');
-  const [codeLanguage, setCodeLanguage] = useState<'html' | 'react' | 'python'>('html');
-  const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState<'layout' | 'customize'>('layout');
   
   // Local state for customization
   const [selectedLayout, setSelectedLayout] = useState(currentLayout);
@@ -41,55 +37,7 @@ export default function EmbedCustomizer({
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
-  const getCodeSnippet = () => {
-    const snippets = {
-      html: `<!-- Add this to your HTML -->
-<script 
-  src="${baseUrl}/embed.js" 
-  data-space-id="${spaceId}">
-</script>`,
-      
-      react: `// Install: npm install @testispace/react-embed
-      
-import TestiSpaceEmbed from '@testispace/react-embed';
 
-function MyPage() {
-  return (
-    <TestiSpaceEmbed 
-      spaceId="${spaceId}"
-    />
-  );
-}`,
-      
-      python: `# Flask/Django template example
-
-from flask import render_template
-
-@app.route('/testimonials')
-def testimonials():
-    embed_config = {
-        'src': '${baseUrl}/embed.js',
-        'space_id': '${spaceId}',
-        'layout': '${selectedLayout}',
-        'style': '${selectedStyle}'
-    }
-    return render_template('page.html', embed=embed_config)
-
-# In your template:
-# <script src="{{ embed.src }}" 
-#   data-space-id="{{ embed.space_id }}" 
-#   data-layout="{{ embed.layout }}"
-#   data-style="{{ embed.style }}"></script>`
-    };
-    
-    return snippets[codeLanguage];
-  };
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(getCodeSnippet());
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const saveCustomization = async () => {
     setSaving(true);
@@ -127,7 +75,6 @@ def testimonials():
   };
 
   const tabs = [
-    { id: 'code' as const, label: 'Code Snippets', icon: <Code size={18} /> },
     { id: 'layout' as const, label: 'Layout', icon: <LayoutGrid size={18} /> },
     { id: 'customize' as const, label: 'Customize', icon: <Palette size={18} /> },
   ];
@@ -173,46 +120,6 @@ def testimonials():
 
       {/* Tab Content */}
       <div className="min-h-[300px]">
-        {activeTab === 'code' && (
-          <div className="space-y-4">
-            <div className="flex gap-2 mb-4">
-              {['html', 'react', 'python'].map((lang) => (
-                <button
-                  key={lang}
-                  onClick={() => setCodeLanguage(lang as any)}
-                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                    codeLanguage === lang
-                      ? 'bg-primary text-white'
-                      : 'bg-secondary/30 text-foreground hover:bg-secondary/50'
-                  }`}
-                >
-                  {lang.toUpperCase()}
-                </button>
-              ))}
-            </div>
-
-            <div className="relative">
-              <SyntaxHighlighter
-                language={codeLanguage === 'html' ? 'markup' : codeLanguage}
-                style={vscDarkPlus}
-                customStyle={{
-                  borderRadius: '0.75rem',
-                  padding: '1.5rem',
-                  fontSize: '0.875rem'
-                }}
-              >
-                {getCodeSnippet()}
-              </SyntaxHighlighter>
-              
-              <button
-                onClick={handleCopy}
-                className="absolute top-4 right-4 p-2 bg-secondary/80 hover:bg-secondary rounded-lg transition-colors"
-              >
-                {copied ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
-              </button>
-            </div>
-          </div>
-        )}
 
         {activeTab === 'layout' && (
           <div className="space-y-6">

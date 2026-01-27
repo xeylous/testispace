@@ -71,25 +71,9 @@ export default async function SpaceOverviewPage({ params }: { params: any }) {
           <p className="text-muted-foreground">Quick insights into your testimonial collection.</p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="glass-card p-6 rounded-xl">
-             <h3 className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-2">Total Received</h3>
-             <p className="text-4xl font-bold">{stats.total}</p>
-        </div>
-        <div className="glass-card p-6 rounded-xl">
-             <h3 className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-2">Approved</h3>
-             <p className="text-4xl font-bold text-green-500">{stats.approved}</p>
-        </div>
-        <div className="glass-card p-6 rounded-xl">
-             <h3 className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-2">Video/Image</h3>
-             <p className="text-4xl font-bold text-purple-400">{stats.media}</p>
-        </div>
-        <div className="glass-card p-6 rounded-xl">
-             <h3 className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-2">Text Only</h3>
-             <p className="text-4xl font-bold text-blue-400">{stats.text}</p>
-        </div>
-      </div>
+      {/* Stats - Removed and moved to Analytics */}
+      
+      {/* Recent Testimonials Table */}
 
      {/* Recent Testimonials Table */}
      <div className="glass-card rounded-xl border border-border overflow-hidden">
