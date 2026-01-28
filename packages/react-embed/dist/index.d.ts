@@ -8,4 +8,26 @@ interface TestiSpaceEmbedProps {
 }
 declare const TestiSpaceEmbed: React.FC<TestiSpaceEmbedProps>;
 
-export { type TestiSpaceEmbedProps, TestiSpaceEmbed as default };
+interface Testimonial {
+    _id: string;
+    content: string;
+    rating: number;
+    userDetails: {
+        name: string;
+        designation?: string;
+        avatar?: string;
+    };
+    type: 'text' | 'video' | 'image';
+    mediaUrl?: string;
+    mediaType?: string;
+    [key: string]: any;
+}
+declare const useTestimonials: (spaceId: string, options?: {
+    baseUrl?: string;
+}) => {
+    testimonials: Testimonial[];
+    loading: boolean;
+    error: Error | null;
+};
+
+export { type TestiSpaceEmbedProps, type Testimonial, TestiSpaceEmbed as default, useTestimonials };

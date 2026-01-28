@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 export interface TestiSpaceEmbedProps {
   spaceId: string;
@@ -47,3 +47,48 @@ const TestiSpaceEmbed: React.FC<TestiSpaceEmbedProps> = ({
 };
 
 export default TestiSpaceEmbed;
+
+export interface Testimonial {
+  _id: string;
+  content: string;
+  rating: number;
+  userDetails: {
+    name: string;
+    designation?: string;
+    avatar?: string;
+  };
+  type: 'text' | 'video' | 'image';
+  mediaUrl?: string;
+  mediaType?: string;
+  [key: string]: any;
+}
+
+export const useTestimonials = (spaceId: string, options?: { baseUrl?: string }) => {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const baseUrl = options?.baseUrl || "https://testispace.vercel.app";
+
+  useEffect(() => {
+    if (!spaceId) return;
+
+    setLoading(true);
+    fetch(`${baseUrl}/api/embed/${spaceId}`)
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch testimonials');
+        return res.json();
+      })
+      .then(data => {
+        setTestimonials(data.testimonials || (Array.isArray(data) ? data : []));
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error fetching testimonials:', err);
+        setError(err);
+        setLoading(false);
+      });
+  }, [spaceId, baseUrl]);
+
+  return { testimonials, loading, error };
+};

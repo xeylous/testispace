@@ -1,5 +1,5 @@
 // src/index.tsx
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 var TestiSpaceEmbed = ({
   spaceId,
   baseUrl = "https://testispace.vercel.app",
@@ -26,6 +26,29 @@ var TestiSpaceEmbed = ({
   return /* @__PURE__ */ React.createElement("div", { ref: containerRef, className: "testispace-wrapper" });
 };
 var index_default = TestiSpaceEmbed;
+var useTestimonials = (spaceId, options) => {
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const baseUrl = (options == null ? void 0 : options.baseUrl) || "https://testispace.vercel.app";
+  useEffect(() => {
+    if (!spaceId) return;
+    setLoading(true);
+    fetch(`${baseUrl}/api/embed/${spaceId}`).then((res) => {
+      if (!res.ok) throw new Error("Failed to fetch testimonials");
+      return res.json();
+    }).then((data) => {
+      setTestimonials(data.testimonials || (Array.isArray(data) ? data : []));
+      setLoading(false);
+    }).catch((err) => {
+      console.error("Error fetching testimonials:", err);
+      setError(err);
+      setLoading(false);
+    });
+  }, [spaceId, baseUrl]);
+  return { testimonials, loading, error };
+};
 export {
-  index_default as default
+  index_default as default,
+  useTestimonials
 };
