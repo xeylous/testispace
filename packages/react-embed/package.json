@@ -1,6 +1,6 @@
 {
     "name": "testispace-react-embed",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "official React component for TestiSpace testimonials",
     "main": "dist/index.js",
     "publishConfig": {
