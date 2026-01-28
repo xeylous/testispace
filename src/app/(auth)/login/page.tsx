@@ -1,6 +1,6 @@
 "use client";
 import { signIn } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
@@ -8,7 +8,7 @@ import { auth } from "@/lib/firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+function LoginForm() {
   const [loginMethod, setLoginMethod] = useState<"email" | "phone">("email");
   
   // Email State
@@ -310,5 +310,13 @@ export default function LoginPage() {
         </Link>
       </p>
     </motion.div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center min-h-[50vh] text-primary">Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }
