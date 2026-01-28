@@ -4,6 +4,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+import { auth } from "@/lib/firebase";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 
 export default function RegisterPage() {
   const [step, setStep] = useState<"register" | "otp">("register");
@@ -13,16 +15,94 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   
-  // OTP Form State
+  // Phone OTP State
+  const [phoneOtp, setPhoneOtp] = useState("");
+  const [confirmationResult, setConfirmationResult] = useState<any>(null);
+  const [showPhoneOtpInput, setShowPhoneOtpInput] = useState(false);
+
+  // Email OTP
   const [otp, setOtp] = useState("");
   
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const handleSendPhoneOtp = async () => {
+    if (!phone) {
+        setError("Please enter a phone number");
+        return;
+    }
+    // Basic E.164 format check validation
+    if (!phone.startsWith("+") || phone.length < 10) {
+        setError("Please include country code! (e.g., +919876543210)");
+        return;
+    }
+    setError("");
+    setLoading(true);
+
+    // Placeholder for Phone Auth (Billing Restriction)
+    console.log("We are working on this feature");
+    alert("We are working on this feature");
+    setLoading(false);
+    return;
+
+    /* 
+    // Original Implementation (Requires Firebase Blaze Plan for real numbers)
+    try {
+        if (!window.recaptchaVerifier) {
+            window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+                size: "invisible",
+                callback: () => {
+                    // reCAPTCHA solved
+                }
+            });
+        }
+        
+        const appVerifier = window.recaptchaVerifier;
+        const result = await signInWithPhoneNumber(auth, phone, appVerifier);
+        setConfirmationResult(result);
+        setShowPhoneOtpInput(true);
+        alert("OTP sent to your phone");
+    } catch (err: any) {
+        console.error("Phone Auth Error:", err);
+        if (err.code === "auth/billing-not-enabled") {
+             setError("Firebase Billing is required for real SMS. Please add 'Test Phone Numbers' in Firebase Console -> Authentication -> Sign-in method -> Phone.");
+        } else {
+             setError(`Failed to send Phone OTP: ${err.message} (${err.code || "unknown"})`);
+        }
+    } finally {
+        setLoading(false);
+    }
+    */
+  };
+
+  const handleVerifyPhoneOtp = async () => {
+      if (!confirmationResult || !phoneOtp) return;
+      setLoading(true);
+      try {
+          await confirmationResult.confirm(phoneOtp);
+          setIsPhoneVerified(true);
+          setShowPhoneOtpInput(false);
+          setError("");
+      } catch (err) {
+          setError("Invalid Phone OTP");
+      } finally {
+          setLoading(false);
+      }
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Only enforce verification if a phone number is provided
+    if (phone && !isPhoneVerified) {
+        setError("Please verify your phone number first");
+        return;
+    }
+
     setLoading(true);
     setError("");
 
@@ -30,9 +110,14 @@ export default function RegisterPage() {
         const res = await fetch("/api/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, email, password }),
+            body: JSON.stringify({ 
+                name, 
+                email, 
+                password,
+                phone,
+                isPhoneVerified: true
+            }),
         });
-
         if (res.ok) {
             setStep("otp");
         } else {
@@ -55,7 +140,13 @@ export default function RegisterPage() {
           const res = await fetch("/api/verify-otp", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email, otp }),
+              body: JSON.stringify({                                
+                  email, 
+                  otp,
+                  // Pass phone details if verified during this session
+                  // However, API expects them to be in Redis from register step
+                  // So we typically don't need to send them again here unless API changes
+               }),
           });
 
           if (res.ok) {
@@ -131,6 +222,62 @@ export default function RegisterPage() {
                   </button>
                 </div>
             </div>
+
+            {/* Phone Field */}
+            <div>
+                <label className="block text-sm font-medium mb-1">Phone Number <span className="text-muted-foreground text-xs">(Optional)</span></label>
+                <div className="flex gap-2">
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      disabled={isPhoneVerified || showPhoneOtpInput}
+                      className="flex-1 bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-foreground"
+                      placeholder="+919876543210"
+                    />
+                    {!isPhoneVerified && !showPhoneOtpInput && (
+                        <button
+                            type="button"
+                            onClick={handleSendPhoneOtp}
+                            disabled={loading || !phone}
+                            className="bg-secondary hover:bg-secondary/80 text-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                        >
+                            Verify
+                        </button>
+                    )}
+                    {isPhoneVerified && (
+                        <span className="flex items-center text-green-500 px-3 bg-green-500/10 rounded-lg text-sm font-medium">
+                            Verified
+                        </span>
+                    )}
+                </div>
+                <div id="recaptcha-container"></div>
+            </div>
+
+            {/* Phone OTP Input */}
+            {showPhoneOtpInput && (
+                 <div className="mt-2 p-4 bg-secondary/10 rounded-lg border border-border">
+                    <label className="block text-sm font-medium mb-1">Enter Phone OTP</label>
+                    <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={phoneOtp}
+                          onChange={(e) => setPhoneOtp(e.target.value)}
+                          className="flex-1 bg-input border border-border rounded-lg px-4 py-2 text-foreground"
+                          placeholder="123456"
+                        />
+                        <button
+                            type="button"
+                            onClick={handleVerifyPhoneOtp}
+                            disabled={loading}
+                            className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium"
+                        >
+                            Confirm
+                        </button>
+                    </div>
+                 </div>
+            )}
+
             <button
               type="submit"
               disabled={loading}

@@ -23,6 +23,21 @@ export const authOptions: NextAuthOptions = {
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
+                // HANDLE PHONE LOGIN
+                if (credentials?.isPhoneLogin === "true") {
+                    if (!credentials?.phone) throw new Error("Phone number required");
+
+                    await connectDB();
+                    const user = await User.findOne({ phone: credentials.phone });
+
+                    if (!user) {
+                        throw new Error("No account found with this phone number. Please sign up.");
+                    }
+
+                    return { id: user._id.toString(), name: user.name, email: user.email, image: user.image };
+                }
+
+                // HANDLE EMAIL LOGIN
                 if (!credentials?.email || !credentials?.password) {
                     throw new Error("Invalid credentials");
                 }

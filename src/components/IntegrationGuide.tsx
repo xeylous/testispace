@@ -17,19 +17,14 @@ export default function IntegrationGuide({ spaceId, baseUrl }: IntegrationGuideP
 
   const getCodeSnippet = () => {
     if (codeLanguage === 'react' && reactMode === 'tailwind') {
-      return `import { useEffect, useState } from 'react';
-import { Star } from 'lucide-react'; // Make sure to verify icon imports
+      return `import { Star } from 'lucide-react'; 
+import { useTestimonials } from 'testispace-react-embed';
 
 export default function Testimonials() {
-  const [testimonials, setTestimonials] = useState([]);
+  const { testimonials, loading } = useTestimonials('${spaceId}');
 
-  useEffect(() => {
-    // Fetch testimonials from TestiSpace
-    fetch('${baseUrl}/api/embed/${spaceId}')
-      .then(res => res.json())
-      .then(data => setTestimonials(data.testimonials || []))
-      .catch(err => console.error('Error fetching testimonials:', err));
-  }, []);
+  if (loading) return <div>Loading...</div>;
+  if (!testimonials.length) return null;
 
   return (
     <section className="py-12 bg-gray-50 dark:bg-slate-900">
