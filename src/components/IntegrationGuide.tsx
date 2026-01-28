@@ -22,17 +22,13 @@ export default function IntegrationGuide({ spaceId, baseUrl }: IntegrationGuideP
   data-space-id="${spaceId}">
 </script>`,
       
-      react: `// Install: npm install @testispace/react-embed
+      react: `// Install: npm install testispace-react-embed
       
-import TestiSpaceEmbed from '@testispace/react-embed';
+import TestiSpaceEmbed from 'testispace-react-embed';
 
-function MyPage() {
-  return (
-    <TestiSpaceEmbed 
-      spaceId="${spaceId}"
-    />
-  );
-}`,
+<TestiSpaceEmbed 
+  spaceId="${spaceId}"
+/>`,
       
       python: `# Flask/Django template example
 
