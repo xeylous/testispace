@@ -40,7 +40,9 @@ export async function POST(req: Request) {
             email: tempUserData.email,
             password: tempUserData.password,
             provider: "credentials",
-            isVerified: true
+            isVerified: true,
+            phone: tempUserData.phone,
+            isPhoneVerified: tempUserData.isPhoneVerified
         });
 
         // Delete from Redis
