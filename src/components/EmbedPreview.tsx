@@ -12,6 +12,7 @@ interface EmbedPreviewProps {
     starColor: string;
     fontFamily: string;
     borderRadius: string;
+    containerBackground?: string;
   };
 }
 
@@ -99,8 +100,8 @@ export default function EmbedPreview({ layout, cardStyle, customStyles }: EmbedP
   const cardStyles = getCardStyle();
 
   return (
-    <div className="p-6 rounded-lg" style={{ 
-      backgroundColor: `${customStyles.backgroundColor}10`,
+    <div className="p-6 rounded-lg transition-colors duration-300" style={{ 
+      background: customStyles.containerBackground || `${customStyles.backgroundColor}10`,
       fontFamily: customStyles.fontFamily 
     }}>
       <div className={getLayoutClass()}>
