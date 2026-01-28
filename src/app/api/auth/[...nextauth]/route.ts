@@ -21,8 +21,11 @@ export const authOptions: NextAuthOptions = {
             credentials: {
                 email: { label: "Email", type: "email" },
                 password: { label: "Password", type: "password" },
+                phone: { label: "Phone", type: "text" },
+                isPhoneLogin: { label: "Is Phone Login", type: "text" },
+                idToken: { label: "ID Token", type: "text" }
             },
-            async authorize(credentials) {
+            async authorize(credentials: Record<"email" | "password" | "phone" | "isPhoneLogin" | "idToken", string> | undefined) {
                 // HANDLE PHONE LOGIN
                 if (credentials?.isPhoneLogin === "true") {
                     if (!credentials?.phone) throw new Error("Phone number required");
