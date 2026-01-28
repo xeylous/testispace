@@ -32,7 +32,8 @@ export default function EmbedCustomizer({
     accentColor: currentCustomStyles.accentColor || '#8b5cf6',
     starColor: currentCustomStyles.starColor || '#eab308',
     fontFamily: currentCustomStyles.fontFamily || 'Inter',
-    borderRadius: currentCustomStyles.borderRadius || '12'
+    borderRadius: currentCustomStyles.borderRadius || '12',
+    containerBackground: currentCustomStyles.containerBackground || 'transparent'
   });
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -143,21 +144,50 @@ export default function EmbedCustomizer({
 
             <div className="mt-8">
               <h3 className="font-bold mb-4">Card Style</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {cardStyles.map((style) => (
-                  <button
-                    key={style.id}
-                    onClick={() => handleStyleChange(style.id)}
-                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all text-left ${
-                      selectedStyle === style.id
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                  >
-                    <div className="font-bold text-foreground mb-1">{style.name}</div>
-                    <div className="text-xs text-muted-foreground">{style.preview}</div>
-                  </button>
-                ))}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {cardStyles.map((style) => {
+                  // Determine preview style based on type
+                  let previewStyle: any = {
+                    backgroundColor: customStyles.backgroundColor,
+                    color: customStyles.textColor,
+                    border: '1px solid transparent',
+                  };
+
+                  if (style.id === 'modern') {
+                    previewStyle.background = `linear-gradient(135deg, ${customStyles.backgroundColor}EE, ${customStyles.backgroundColor}DD)`;
+                    previewStyle.border = `1px solid ${customStyles.accentColor}40`;
+                    previewStyle.boxShadow = `0 4px 12px ${customStyles.accentColor}20`;
+                  } else if (style.id === 'minimal') {
+                    previewStyle.border = `1px solid ${customStyles.textColor}20`;
+                  } else if (style.id === 'classic') {
+                    previewStyle.border = `2px solid ${customStyles.accentColor}50`;
+                  } else if (style.id === 'gradient') {
+                    previewStyle.background = `linear-gradient(135deg, ${customStyles.accentColor}40, ${customStyles.backgroundColor})`;
+                    previewStyle.border = 'none';
+                  }
+
+                  return (
+                    <button
+                      key={style.id}
+                      onClick={() => handleStyleChange(style.id)}
+                      className={`relative overflow-hidden p-6 rounded-xl transition-all h-32 flex flex-col justify-end items-start text-left group ${
+                        selectedStyle === style.id
+                          ? 'ring-2 ring-primary ring-offset-2 ring-offset-background'
+                          : 'hover:opacity-90'
+                      }`}
+                      style={previewStyle}
+                    >
+                      <div className="font-bold text-sm mb-1">{style.name}</div>
+                      <div className="text-[10px] opacity-70 leading-tight">{style.preview}</div>
+                      
+                      {selectedStyle === style.id && (
+                        <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                          <Check size={12} />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -185,12 +215,42 @@ export default function EmbedCustomizer({
             <p className="text-muted-foreground">Customize colors and styling</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium mb-2">Background Color</label>
+                <label className="block text-sm font-medium mb-2">Card Background</label>
                 <input
                   type="color"
                   value={customStyles.backgroundColor}
                   onChange={(e) => setCustomStyles({...customStyles, backgroundColor: e.target.value})}
                   className="w-full h-12 rounded-lg border border-border cursor-pointer"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Page/Container Background</label>
+                <div className="flex gap-2 mb-2">
+                   <button 
+                    onClick={() => setCustomStyles({...customStyles, containerBackground: 'transparent'})}
+                    className="text-xs px-2 py-1 rounded border border-border hover:bg-white/5"
+                   >
+                     Transparent
+                   </button>
+                   <button 
+                    onClick={() => setCustomStyles({...customStyles, containerBackground: 'linear-gradient(to right, #4facfe 0%, #00f2fe 100%)'})}
+                    className="text-xs px-2 py-1 rounded border border-border hover:bg-white/5"
+                   >
+                     Blue Grad
+                   </button>
+                   <button 
+                    onClick={() => setCustomStyles({...customStyles, containerBackground: 'linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)'})}
+                    className="text-xs px-2 py-1 rounded border border-border hover:bg-white/5"
+                   >
+                     Green Grad
+                   </button>
+                </div>
+                <input
+                  type="text"
+                  placeholder="e.g. #000000 or linear-gradient(...)"
+                  value={customStyles.containerBackground}
+                  onChange={(e) => setCustomStyles({...customStyles, containerBackground: e.target.value})}
+                  className="w-full h-12 rounded-lg border border-border px-3 bg-background text-foreground"
                 />
               </div>
               <div>
