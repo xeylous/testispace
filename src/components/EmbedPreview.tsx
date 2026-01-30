@@ -1,6 +1,9 @@
 "use client";
 
 import { Star } from "lucide-react";
+import { AnimatedTestimonials } from "./ui/animated-testimonials";
+import { MarqueeTestimonials } from "./ui/marquee-testimonials";
+import { CardStackTestimonials } from "./ui/card-stack-testimonials";
 
 interface EmbedPreviewProps {
   layout: string;
@@ -13,6 +16,7 @@ interface EmbedPreviewProps {
     fontFamily: string;
     borderRadius: string;
     containerBackground?: string;
+    showImages?: boolean;
   };
 }
 
@@ -41,6 +45,8 @@ const mockTestimonials = [
 ];
 
 export default function EmbedPreview({ layout, cardStyle, customStyles }: EmbedPreviewProps) {
+  const showImages = customStyles.showImages !== false; // Default to true
+
   const getCardStyle = () => {
     const baseStyle = {
       backgroundColor: customStyles.backgroundColor,
@@ -99,6 +105,42 @@ export default function EmbedPreview({ layout, cardStyle, customStyles }: EmbedP
 
   const cardStyles = getCardStyle();
 
+  // Special handling for animated layout
+  if (layout === 'animated') {
+    return (
+      <div className="min-h-[500px]">
+        <AnimatedTestimonials 
+          testimonials={mockTestimonials}
+          customStyles={customStyles}
+        />
+      </div>
+    );
+  }
+
+  // Marquee layout
+  if (layout === 'marquee') {
+    return (
+      <div className="min-h-[400px]">
+        <MarqueeTestimonials 
+          testimonials={mockTestimonials}
+          customStyles={customStyles}
+        />
+      </div>
+    );
+  }
+
+  // Card Stack layout
+  if (layout === 'stack') {
+    return (
+      <div className="min-h-[500px]">
+        <CardStackTestimonials 
+          testimonials={mockTestimonials}
+          customStyles={customStyles}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 rounded-lg transition-colors duration-300" style={{ 
       background: customStyles.containerBackground || `${customStyles.backgroundColor}10`,
@@ -112,11 +154,13 @@ export default function EmbedPreview({ layout, cardStyle, customStyles }: EmbedP
             style={cardStyles}
           >
             <div className="flex items-center gap-3 mb-4">
-              <img
-                src={testimonial.avatar}
-                alt={testimonial.name}
-                className="w-12 h-12 rounded-full"
-              />
+              {showImages && (
+                <img
+                  src={testimonial.avatar}
+                  alt={testimonial.name}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+              )}
               <div>
                 <div className="font-bold" style={{ color: customStyles.textColor }}>
                   {testimonial.name}

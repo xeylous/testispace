@@ -158,7 +158,7 @@ export default function SubmissionForm({ spaceId }: { spaceId: string }) {
           onChange={(e) => setTextContent(e.target.value)}
           className="w-full bg-input border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-ring outline-none transition-all text-foreground min-h-[120px]"
           placeholder="Tell us what you liked..."
-          required={!file}
+          required
         />
       </div>
 

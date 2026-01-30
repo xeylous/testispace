@@ -13,7 +13,7 @@ export interface ISpace extends Document {
     createdAt: Date;
 
     // Embed customization fields
-    embedLayout: 'grid' | 'carousel' | 'masonry' | 'list';
+    embedLayout: 'grid' | 'carousel' | 'masonry' | 'list' | 'animated' | 'marquee' | 'stack';
     cardStyle: 'modern' | 'minimal' | 'classic' | 'gradient';
     customStyles: {
         backgroundColor?: string;
@@ -22,6 +22,7 @@ export interface ISpace extends Document {
         starColor?: string;
         fontFamily?: string;
         borderRadius?: string;
+        showImages?: boolean;
     };
     selectedTestimonials: mongoose.Types.ObjectId[];
 }
@@ -39,7 +40,7 @@ const SpaceSchema = new Schema<ISpace>({
     createdAt: { type: Date, default: Date.now },
 
     // Embed customization
-    embedLayout: { type: String, enum: ['grid', 'carousel', 'masonry', 'list'], default: 'grid' },
+    embedLayout: { type: String, enum: ['grid', 'carousel', 'masonry', 'list', 'animated', 'marquee', 'stack'], default: 'grid' },
     cardStyle: { type: String, enum: ['modern', 'minimal', 'classic', 'gradient'], default: 'modern' },
     customStyles: { type: Schema.Types.Mixed, default: {} },
     selectedTestimonials: { type: [{ type: Schema.Types.ObjectId, ref: 'Testimonial' }], default: [] }
