@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { Copy, Check, Code } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 
 interface IntegrationGuideProps {
   spaceId: string;
@@ -15,9 +15,27 @@ export default function IntegrationGuide({ spaceId, baseUrl }: IntegrationGuideP
   const [copied, setCopied] = useState(false);
   const [reactMode, setReactMode] = useState<'package' | 'tailwind'>('package');
 
-  const getCodeSnippet = () => {
-    if (codeLanguage === 'react' && reactMode === 'tailwind') {
-      return `import { Star } from 'lucide-react'; 
+  const handleCopy = (code: string) => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const htmlCode = `<!-- Add this to your HTML -->
+<script 
+  src="${baseUrl}/embed.js" 
+  data-space-id="${spaceId}">
+</script>`;
+
+  const reactPackageCode = `// Install: npm install testispace-react-embed
+      
+import TestiSpaceEmbed from 'testispace-react-embed';
+
+<TestiSpaceEmbed 
+  spaceId="${spaceId}"
+/>`;
+
+  const reactTailwindCode = `import { Star } from 'lucide-react'; 
 import { useTestimonials } from 'testispace-react-embed';
 
 export default function Testimonials() {
@@ -46,7 +64,6 @@ export default function Testimonials() {
               {/* Content */}
               <div className="flex-grow">
                  {t.content && <p className="text-gray-700 dark:text-gray-300 italic mb-4">"{t.content}"</p>}
-                 {/* Handle mediaType === 'video' or 'image' if needed */}
               </div>
 
               {/* Author */}
@@ -66,24 +83,8 @@ export default function Testimonials() {
     </section>
   );
 }`;
-    }
 
-    const snippets = {
-      html: `<!-- Add this to your HTML -->
-<script 
-  src="${baseUrl}/embed.js" 
-  data-space-id="${spaceId}">
-</script>`,
-      
-      react: `// Install: npm install testispace-react-embed
-      
-import TestiSpaceEmbed from 'testispace-react-embed';
-
-<TestiSpaceEmbed 
-  spaceId="${spaceId}"
-/>`,
-      
-      python: `# Flask/Django template example
+  const pythonCode = `# Flask/Django template example
 
 from flask import render_template
 
@@ -97,91 +98,100 @@ def testimonials():
 
 # In your template:
 # <script src="{{ embed.src }}" 
-#   data-space-id="{{ embed.space_id }}"></script>`
-    };
-    
-    return snippets[codeLanguage];
+#   data-space-id="{{ embed.space_id }}"></script>`;
+
+  // Get current code and language info based on selection
+  const getCurrentCode = () => {
+    if (codeLanguage === 'html') return htmlCode;
+    if (codeLanguage === 'python') return pythonCode;
+    return reactMode === 'package' ? reactPackageCode : reactTailwindCode;
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(getCodeSnippet());
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const getCurrentLanguageInfo = () => {
+    switch (codeLanguage) {
+      case 'html':
+        return { title: 'HTML', description: 'Simple script tag integration for any website' };
+      case 'react':
+        return { title: 'React', description: 'Component integration for React applications' };
+      case 'python':
+        return { title: 'Python', description: 'Flask/Django template integration' };
+    }
   };
+
+  const languageInfo = getCurrentLanguageInfo();
+  const currentCode = getCurrentCode();
 
   return (
     <div className="glass-card p-6 rounded-xl border border-border">
-      <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-        <Code size={24} className="text-primary" />
-        Integration Guide
-      </h2>
-      <p className="text-muted-foreground mb-6">
-        Choose your preferred framework or language to get the embed code for your website.
-      </p>
-
-      <div className="space-y-4">
-        {/* Language Selection */}
-        <div className="flex flex-wrap gap-4 justify-between items-center mb-4">
-           <div className="flex gap-2">
-            {['html', 'react', 'python'].map((lang) => (
-                <button
-                key={lang}
-                onClick={() => setCodeLanguage(lang as any)}
-                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                    codeLanguage === lang
-                    ? 'bg-primary text-white'
-                    : 'bg-secondary/30 text-foreground hover:bg-secondary/50'
-                }`}
-                >
-                {lang.toUpperCase()}
-                </button>
-            ))}
-           </div>
-
-           {/* React Sub-options */}
-           {codeLanguage === 'react' && (
-               <div className="flex gap-2 bg-secondary/20 p-1 rounded-lg">
-                   <button
-                    onClick={() => setReactMode('package')}
-                    className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-                        reactMode === 'package' ? 'bg-primary text-white shadow' : 'hover:bg-white/10'
-                    }`}
-                   >
-                       NPM Package
-                   </button>
-                   <button
-                    onClick={() => setReactMode('tailwind')}
-                    className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-                        reactMode === 'tailwind' ? 'bg-primary text-white shadow' : 'hover:bg-white/10'
-                    }`}
-                   >
-                       Tailwind Code
-                   </button>
-               </div>
-           )}
-        </div>
-
-        <div className="relative">
-          <SyntaxHighlighter
-            language={codeLanguage === 'html' ? 'markup' : (codeLanguage === 'react' && reactMode === 'tailwind' ? 'tsx' : codeLanguage)}
-            style={vscDarkPlus}
-            customStyle={{
-              borderRadius: '0.75rem',
-              padding: '1.5rem',
-              fontSize: '0.875rem',
-              maxHeight: '500px'
-            }}
-          >
-            {getCodeSnippet()}
-          </SyntaxHighlighter>
-          
+      {/* Language Selection Tabs */}
+      <div className="flex gap-2 mb-6">
+        {['html', 'react', 'python'].map((lang) => (
           <button
-            onClick={handleCopy}
-            className="absolute top-4 right-4 p-2 bg-secondary/80 hover:bg-secondary rounded-lg transition-colors"
+            key={lang}
+            onClick={() => setCodeLanguage(lang as any)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              codeLanguage === lang
+                ? 'bg-primary text-white'
+                : 'bg-secondary/30 text-foreground hover:bg-secondary/50'
+            }`}
           >
-            {copied ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
+            {lang.toUpperCase()}
+          </button>
+        ))}
+      </div>
+
+      {/* Card Header */}
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h3 className="text-lg font-bold">{languageInfo.title}</h3>
+          <p className="text-sm text-muted-foreground">{languageInfo.description}</p>
+        </div>
+        <button
+          onClick={() => handleCopy(currentCode)}
+          className="p-2 bg-secondary/80 hover:bg-secondary rounded-lg transition-colors"
+          title="Copy code"
+        >
+          {copied ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
+        </button>
+      </div>
+      
+      {/* React Sub-options */}
+      {codeLanguage === 'react' && (
+        <div className="flex gap-2 bg-secondary/20 p-1 rounded-lg mb-4 w-fit">
+          <button
+            onClick={() => setReactMode('package')}
+            className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+              reactMode === 'package' ? 'bg-primary text-white shadow' : 'hover:bg-white/10'
+            }`}
+          >
+            NPM Package
+          </button>
+          <button
+            onClick={() => setReactMode('tailwind')}
+            className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+              reactMode === 'tailwind' ? 'bg-primary text-white shadow' : 'hover:bg-white/10'
+            }`}
+          >
+            Tailwind Code
           </button>
         </div>
+      )}
+
+      {/* Code Display */}
+      <div className="relative">
+        <SyntaxHighlighter
+          language={codeLanguage === 'html' ? 'markup' : (codeLanguage === 'react' && reactMode === 'tailwind' ? 'tsx' : codeLanguage)}
+          style={vscDarkPlus}
+          customStyle={{
+            borderRadius: '0.75rem',
+            padding: '1.5rem',
+            fontSize: '0.875rem',
+            maxHeight: '500px',
+            margin: 0
+          }}
+        >
+          {currentCode}
+        </SyntaxHighlighter>
       </div>
     </div>
   );
