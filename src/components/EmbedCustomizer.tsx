@@ -33,10 +33,11 @@ export default function EmbedCustomizer({
     starColor: currentCustomStyles.starColor || '#eab308',
     fontFamily: currentCustomStyles.fontFamily || 'Inter',
     borderRadius: currentCustomStyles.borderRadius || '12',
-    containerBackground: currentCustomStyles.containerBackground || 'transparent'
+    containerBackground: currentCustomStyles.containerBackground || 'transparent',
+    showImages: currentCustomStyles.showImages !== undefined ? currentCustomStyles.showImages : true
   });
   const [saving, setSaving] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
 
 
 
@@ -81,10 +82,48 @@ export default function EmbedCustomizer({
   ];
 
   const layouts = [
-    { id: 'grid', name: 'Grid', desc: 'Classic grid layout' },
-    { id: 'carousel', name: 'Carousel', desc: 'Sliding carousel' },
-    { id: 'masonry', name: 'Masonry', desc: 'Pinterest-style' },
-    { id: 'list', name: 'List', desc: 'Vertical list' },
+    { 
+      id: 'animated', 
+      name: 'Animated', 
+      desc: 'Auto-playing carousel with smooth transitions',
+      preview: 'image-quote-carousel'
+    },
+    { 
+      id: 'marquee', 
+      name: '3D Marquee', 
+      desc: 'Infinite scrolling with 3D perspective',
+      preview: '3d-marquee-scroll'
+    },
+    { 
+      id: 'stack', 
+      name: 'Card Stack', 
+      desc: 'Stacked cards with interval transitions',
+      preview: 'card-stack'
+    },
+    { 
+      id: 'grid', 
+      name: 'Grid', 
+      desc: 'Classic responsive grid layout',
+      preview: 'grid-layout'
+    },
+    { 
+      id: 'carousel', 
+      name: 'Carousel', 
+      desc: 'Horizontal sliding carousel',
+      preview: 'carousel-slide'
+    },
+    { 
+      id: 'masonry', 
+      name: 'Masonry', 
+      desc: 'Pinterest-style masonry layout',
+      preview: 'masonry-layout'
+    },
+    { 
+      id: 'list', 
+      name: 'List', 
+      desc: 'Clean vertical list view',
+      preview: 'list-layout'
+    },
   ];
 
   const cardStyles = [
@@ -124,23 +163,159 @@ export default function EmbedCustomizer({
 
         {activeTab === 'layout' && (
           <div className="space-y-6">
-            <p className="text-muted-foreground">Choose how testimonials are displayed</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {layouts.map((layout) => (
-                <button
-                  key={layout.id}
-                  onClick={() => handleLayoutChange(layout.id)}
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all text-left ${
-                    selectedLayout === layout.id
-                      ? 'border-primary bg-primary/10'
-                      : 'border-border hover:border-primary/50'
-                  }`}
-                >
-                  <div className="font-bold text-foreground mb-1">{layout.name}</div>
-                  <div className="text-xs text-muted-foreground">{layout.desc}</div>
-                </button>
-              ))}
+            <div className="flex justify-between items-center">
+              <p className="text-muted-foreground">Choose your testimonial display style</p>
+              <button
+                onClick={() => setShowPreview(!showPreview)}
+                className="bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm border border-primary/20"
+              >
+                <Eye size={16} />
+                {showPreview ? 'Hide Preview' : 'Show Live Preview'}
+              </button>
             </div>
+            
+            {/* Layout Cards Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {layouts.map((layout) => {
+                // Generate mini preview visualization
+                const getPreviewContent = () => {
+                  if (layout.preview === 'image-quote-carousel') {
+                    return (
+                      <div className="relative h-20 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg flex items-center justify-center">
+                        <div className="flex gap-2 items-center">
+                          <div className="w-10 h-10 bg-white/20 rounded-full" />
+                          <div className="flex flex-col gap-1">
+                            <div className="w-12 h-2 bg-white/40 rounded" />
+                            <div className="w-10 h-1.5 bg-white/30 rounded" />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  } else if (layout.preview === '3d-marquee-scroll') {
+                    return (
+                      <div className="relative h-20 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-lg overflow-hidden flex items-center justify-center">
+                        <div className="flex gap-2">
+                          {[...Array(3)].map((_, i) => (
+                            <div key={i} className="min-w-[35px] h-14 bg-white/20 rounded-lg transform -skew-y-3" />
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  } else if (layout.preview === 'card-stack') {
+                    return (
+                      <div className="relative h-20 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-lg flex items-center justify-center">
+                        {[...Array(3)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="absolute w-16 h-12 bg-white/20 rounded-lg"
+                            style={{
+                              transform: `translateY(${i * 3}px) translateX(${i * 2.5}px) scale(${1 - i * 0.05})`,
+                              zIndex: 3 - i,
+                              opacity: 1 - i * 0.3
+                            }}
+                          />
+                        ))}
+                      </div>
+                    );
+                  } else if (layout.preview === 'grid-layout') {
+                    return (
+                      <div className="h-20 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-lg p-2">
+                        <div className="grid grid-cols-2 gap-2 h-full">
+                          {[...Array(4)].map((_, i) => (
+                            <div key={i} className="bg-white/20 rounded" />
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  } else if (layout.preview === 'carousel-slide') {
+                    return (
+                      <div className="relative h-20 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-lg flex items-center justify-center overflow-hidden">
+                        <div className="flex gap-2">
+                          <div className="w-12 h-12 bg-white/10 rounded-lg" />
+                          <div className="w-12 h-12 bg-white/30 rounded-lg" />
+                          <div className="w-12 h-12 bg-white/10 rounded-lg" />
+                        </div>
+                      </div>
+                    );
+                  } else if (layout.preview === 'masonry-layout') {
+                    return (
+                      <div className="h-20 bg-gradient-to-br from-pink-500/20 to-rose-500/20 rounded-lg p-2">
+                        <div className="grid grid-cols-2 gap-2 h-full">
+                          <div className="bg-white/20 rounded row-span-2" />
+                          <div className="bg-white/20 rounded" />
+                          <div className="bg-white/20 rounded" />
+                        </div>
+                      </div>
+                    );
+                  } else if (layout.preview === 'list-layout') {
+                    return (
+                      <div className="h-20 bg-gradient-to-br from-teal-500/20 to-cyan-500/20 rounded-lg p-2 flex flex-col gap-1.5">
+                        {[...Array(3)].map((_, i) => (
+                          <div key={i} className="bg-white/20 rounded h-5" />
+                        ))}
+                      </div>
+                    );
+                  }
+                };
+
+                return (
+                  <button
+                    key={layout.id}
+                    onClick={() => handleLayoutChange(layout.id)}
+                    className={`relative overflow-hidden rounded-lg border-2 transition-all text-left hover:scale-105 ${
+                      selectedLayout === layout.id
+                        ? 'border-primary bg-primary/5 shadow-lg scale-105'
+                        : 'border-border hover:border-primary/50 hover:shadow-md'
+                    }`}
+                  >
+                    {/* Preview */}
+                    <div className="p-2.5">
+                      {getPreviewContent()}
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="px-3 pb-3">
+                      <div className="font-semibold text-sm text-foreground mb-1 flex items-center justify-between">
+                        {layout.name}
+                        {selectedLayout === layout.id && (
+                          <div className="bg-primary text-white rounded-full p-1">
+                            <Check size={10} />
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-[11px] text-muted-foreground leading-tight line-clamp-2">
+                        {layout.desc}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            
+            {/* Full-Width Bottom Preview Panel */}
+            {showPreview && (
+              <div className="mt-6 border-2 border-primary/20 rounded-xl overflow-hidden bg-gradient-to-br from-primary/5 to-transparent">
+                <div className="bg-primary/10 px-4 py-2 border-b border-primary/20 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Eye size={16} className="text-primary" />
+                    <span className="font-semibold text-sm">Live Preview - {layouts.find(l => l.id === selectedLayout)?.name}</span>
+                  </div>
+                  <button
+                    onClick={() => setShowPreview(false)}
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Check size={16} />
+                  </button>
+                </div>
+                <div className="bg-background/50">
+                  <EmbedPreview 
+                    layout={selectedLayout}
+                    cardStyle={selectedStyle}
+                    customStyles={customStyles}
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="mt-8">
               <h3 className="font-bold mb-4">Card Style</h3>
@@ -212,139 +387,334 @@ export default function EmbedCustomizer({
 
         {activeTab === 'customize' && (
           <div className="space-y-6">
-            <p className="text-muted-foreground">Customize colors and styling</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium mb-2">Card Background</label>
-                <input
-                  type="color"
-                  value={customStyles.backgroundColor}
-                  onChange={(e) => setCustomStyles({...customStyles, backgroundColor: e.target.value})}
-                  className="w-full h-12 rounded-lg border border-border cursor-pointer"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Page/Container Background</label>
-                <div className="flex gap-2 mb-2">
-                   <button 
-                    onClick={() => setCustomStyles({...customStyles, containerBackground: 'transparent'})}
-                    className="text-xs px-2 py-1 rounded border border-border hover:bg-white/5"
-                   >
-                     Transparent
-                   </button>
-                   <button 
-                    onClick={() => setCustomStyles({...customStyles, containerBackground: 'linear-gradient(to right, #4facfe 0%, #00f2fe 100%)'})}
-                    className="text-xs px-2 py-1 rounded border border-border hover:bg-white/5"
-                   >
-                     Blue Grad
-                   </button>
-                   <button 
-                    onClick={() => setCustomStyles({...customStyles, containerBackground: 'linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)'})}
-                    className="text-xs px-2 py-1 rounded border border-border hover:bg-white/5"
-                   >
-                     Green Grad
-                   </button>
+            <div className="flex justify-between items-center">
+              <p className="text-muted-foreground">Customize your testimonial colors and styling</p>
+              <button
+                onClick={() => setShowPreview(!showPreview)}
+                className="bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm border border-primary/20"
+              >
+                <Eye size={16} />
+                {showPreview ? 'Hide Preview' : 'Show Live Preview'}
+              </button>
+            </div>
+            
+            {/* Colors Section */}
+            <div className="glass-card p-6 rounded-xl border border-border">
+              <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                <Palette size={18} className="text-primary" />
+                Colors & Theme
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Card Background */}
+                <div className="space-y-3">
+                  <label className="block text-sm font-semibold">Card Background</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={customStyles.backgroundColor}
+                      onChange={(e) => setCustomStyles({...customStyles, backgroundColor: e.target.value})}
+                      className="w-16 h-16 rounded-lg border-2 border-border cursor-pointer shadow-md"
+                    />
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        value={customStyles.backgroundColor}
+                        onChange={(e) => setCustomStyles({...customStyles, backgroundColor: e.target.value})}
+                        className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm font-mono"
+                      />
+                      <div className="flex gap-2 mt-2">
+                        {['#1a1a1a', '#ffffff', '#2563eb', '#8b5cf6'].map((color) => (
+                          <button
+                            key={color}
+                            onClick={() => setCustomStyles({...customStyles, backgroundColor: color})}
+                            className="w-8 h-8 rounded-md border-2 border-border hover:scale-110 transition-transform shadow-sm"
+                            style={{ backgroundColor: color }}
+                            title={color}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
+                {/* Text Color */}
+                <div className="space-y-3">
+                  <label className="block text-sm font-semibold">Text Color</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={customStyles.textColor}
+                      onChange={(e) => setCustomStyles({...customStyles, textColor: e.target.value})}
+                      className="w-16 h-16 rounded-lg border-2 border-border cursor-pointer shadow-md"
+                    />
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        value={customStyles.textColor}
+                        onChange={(e) => setCustomStyles({...customStyles, textColor: e.target.value})}
+                        className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm font-mono"
+                      />
+                      <div className="flex gap-2 mt-2">
+                        {['#ffffff', '#000000', '#f3f4f6', '#1f2937'].map((color) => (
+                          <button
+                            key={color}
+                            onClick={() => setCustomStyles({...customStyles, textColor: color})}
+                            className="w-8 h-8 rounded-md border-2 border-border hover:scale-110 transition-transform shadow-sm"
+                            style={{ backgroundColor: color }}
+                            title={color}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Accent Color */}
+                <div className="space-y-3">
+                  <label className="block text-sm font-semibold">Accent Color</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={customStyles.accentColor}
+                      onChange={(e) => setCustomStyles({...customStyles, accentColor: e.target.value})}
+                      className="w-16 h-16 rounded-lg border-2 border-border cursor-pointer shadow-md"
+                    />
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        value={customStyles.accentColor}
+                        onChange={(e) => setCustomStyles({...customStyles, accentColor: e.target.value})}
+                        className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm font-mono"
+                      />
+                      <div className="flex gap-2 mt-2">
+                        {['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b'].map((color) => (
+                          <button
+                            key={color}
+                            onClick={() => setCustomStyles({...customStyles, accentColor: color})}
+                            className="w-8 h-8 rounded-md border-2 border-border hover:scale-110 transition-transform shadow-sm"
+                            style={{ backgroundColor: color }}
+                            title={color}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Star Color */}
+                <div className="space-y-3">
+                  <label className="block text-sm font-semibold">Star Rating Color</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={customStyles.starColor}
+                      onChange={(e) => setCustomStyles({...customStyles, starColor: e.target.value})}
+                      className="w-16 h-16 rounded-lg border-2 border-border cursor-pointer shadow-md"
+                    />
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        value={customStyles.starColor}
+                        onChange={(e) => setCustomStyles({...customStyles, starColor: e.target.value})}
+                        className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm font-mono"
+                      />
+                      <div className="flex gap-2 mt-2">
+                        {['#eab308', '#fbbf24', '#f59e0b', '#fb923c'].map((color) => (
+                          <button
+                            key={color}
+                            onClick={() => setCustomStyles({...customStyles, starColor: color})}
+                            className="w-8 h-8 rounded-md border-2 border-border hover:scale-110 transition-transform shadow-sm"
+                            style={{ backgroundColor: color }}
+                            title={color}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Background Gradients Section */}
+            <div className="glass-card p-6 rounded-xl border border-border">
+              <h3 className="font-bold text-lg mb-4">Container Background</h3>
+              <p className="text-sm text-muted-foreground mb-4">Choose a gradient or solid color for the background</p>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-4">
+                {[
+                  { name: 'Transparent', value: 'transparent', gradient: 'bg-gray-200 dark:bg-gray-800' },
+                  { name: 'Ocean Blue', value: 'linear-gradient(to right, #4facfe 0%, #00f2fe 100%)', gradient: 'bg-gradient-to-r from-blue-400 to-cyan-400' },
+                  { name: 'Sunset', value: 'linear-gradient(120deg, #f093fb 0%, #f5576c 100%)', gradient: 'bg-gradient-to-br from-pink-400 to-red-400' },
+                  { name: 'Forest', value: 'linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)', gradient: 'bg-gradient-to-br from-lime-300 to-green-400' },
+                  { name: 'Purple Dreams', value: 'linear-gradient(to right, #a8edea 0%, #fed6e3 100%)', gradient: 'bg-gradient-to-r from-cyan-200 to-pink-200' },
+                  { name: 'Dark Night', value: 'linear-gradient(to right, #0f2027, #203a43, #2c5364)', gradient: 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700' },
+                  { name: 'Warm Flame', value: 'linear-gradient(45deg, #ff9a56, #ff6a88)', gradient: 'bg-gradient-to-br from-orange-400 to-pink-500' },
+                  { name: 'Cool Blues', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', gradient: 'bg-gradient-to-br from-indigo-500 to-purple-600' },
+                ].map((preset) => (
+                  <button
+                    key={preset.name}
+                    onClick={() => setCustomStyles({...customStyles, containerBackground: preset.value})}
+                    className={`group relative overflow-hidden rounded-lg border-2 transition-all hover:scale-105 ${
+                      customStyles.containerBackground === preset.value
+                        ? 'border-primary shadow-lg'
+                        : 'border-border hover:border-primary/50'
+                    }`}
+                  >
+                    <div className={`h-20 ${preset.gradient}`} />
+                    <div className="p-2 bg-background/90 backdrop-blur-sm">
+                      <p className="text-xs font-medium text-center">{preset.name}</p>
+                    </div>
+                    {customStyles.containerBackground === preset.value && (
+                      <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                        <Check size={12} />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Custom Gradient / Color</label>
                 <input
                   type="text"
-                  placeholder="e.g. #000000 or linear-gradient(...)"
+                  placeholder="e.g. #000000 or linear-gradient(to right, #ff0000, #00ff00)"
                   value={customStyles.containerBackground}
                   onChange={(e) => setCustomStyles({...customStyles, containerBackground: e.target.value})}
-                  className="w-full h-12 rounded-lg border border-border px-3 bg-background text-foreground"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Text Color</label>
-                <input
-                  type="color"
-                  value={customStyles.textColor}
-                  onChange={(e) => setCustomStyles({...customStyles, textColor: e.target.value})}
-                  className="w-full h-12 rounded-lg border border-border cursor-pointer"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Accent Color</label>
-                <input
-                  type="color"
-                  value={customStyles.accentColor}
-                  onChange={(e) => setCustomStyles({...customStyles, accentColor: e.target.value})}
-                  className="w-full h-12 rounded-lg border border-border cursor-pointer"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Star Color</label>
-                <input
-                  type="color"
-                  value={customStyles.starColor}
-                  onChange={(e) => setCustomStyles({...customStyles, starColor: e.target.value})}
-                  className="w-full h-12 rounded-lg border border-border cursor-pointer"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Font Family</label>
-                <select 
-                  value={customStyles.fontFamily}
-                  onChange={(e) => setCustomStyles({...customStyles, fontFamily: e.target.value})}
-                  className="w-full bg-input border border-border rounded-lg px-4 py-2 text-foreground"
-                >
-                  <option value="Inter">Inter</option>
-                  <option value="Roboto">Roboto</option>
-                  <option value="Poppins">Poppins</option>
-                  <option value="Montserrat">Montserrat</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Border Radius ({customStyles.borderRadius}px)</label>
-                <input
-                  type="range"
-                  min="0"
-                  max="24"
-                  value={customStyles.borderRadius}
-                  onChange={(e) => setCustomStyles({...customStyles, borderRadius: e.target.value})}
-                  className="w-full"
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground text-sm font-mono"
                 />
               </div>
             </div>
+
+            {/* Typography & Style Section */}
+            <div className="glass-card p-6 rounded-xl border border-border">
+              <h3 className="font-bold text-lg mb-4">Typography & Styling</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-semibold mb-3">Font Family</label>
+                  <select 
+                    value={customStyles.fontFamily}
+                    onChange={(e) => setCustomStyles({...customStyles, fontFamily: e.target.value})}
+                    className="w-full bg-input border border-border rounded-lg px-4 py-3 text-foreground font-medium"
+                  >
+                    <option value="Inter">Inter - Modern & Clean</option>
+                    <option value="Roboto">Roboto - Professional</option>
+                    <option value="Poppins">Poppins - Friendly & Bold</option>
+                    <option value="Montserrat">Montserrat - Elegant</option>
+                    <option value="Open Sans">Open Sans - Readable</option>
+                    <option value="Lato">Lato - Versatile</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold mb-3">
+                    Border Radius: {customStyles.borderRadius}px
+                    <span className="ml-2 text-xs text-muted-foreground">
+                      ({customStyles.borderRadius === '0' ? 'Sharp' : customStyles.borderRadius < 8 ? 'Slight' : customStyles.borderRadius < 16 ? 'Rounded' : 'Very Rounded'})
+                    </span>
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="24"
+                    value={customStyles.borderRadius}
+                    onChange={(e) => setCustomStyles({...customStyles, borderRadius: e.target.value})}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                  />
+                  <div className="flex justify-between mt-2">
+                    {[0, 8, 16, 24].map((val) => (
+                      <button
+                        key={val}
+                        onClick={() => setCustomStyles({...customStyles, borderRadius: val.toString()})}
+                        className="text-xs px-2 py-1 rounded border border-border hover:bg-white/5 transition-colors"
+                      >
+                        {val}px
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Display Settings Section */}
+            <div className="glass-card p-6 rounded-xl border border-border">
+              <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                <Eye size={18} className="text-primary" />
+                Display Settings
+              </h3>
+              <div className="flex items-center justify-between p-4 bg-background/50 rounded-lg border border-border">
+                <div>
+                  <label className="font-semibold block text-sm">Show Reviewer Images</label>
+                  <p className="text-[11px] text-muted-foreground">Toggle to show or hide user avatars and photos</p>
+                </div>
+                <button
+                  onClick={() => setCustomStyles({...customStyles, showImages: !customStyles.showImages})}
+                  className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors focus:outline-none ${
+                    customStyles.showImages ? 'bg-primary' : 'bg-gray-600'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                      customStyles.showImages ? 'translate-x-5.5' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
             
-            <div className="flex gap-3 pt-4">
+            {/* Full-Width Bottom Preview Panel */}
+            {showPreview && (
+              <div className="border-2 border-primary/20 rounded-xl overflow-hidden bg-gradient-to-br from-primary/5 to-transparent">
+                <div className="bg-primary/10 px-4 py-2 border-b border-primary/20 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Eye size={16} className="text-primary" />
+                    <span className="font-semibold text-sm">Live Preview - {layouts.find(l => l.id === selectedLayout)?.name}</span>
+                  </div>
+                  <button
+                    onClick={() => setShowPreview(false)}
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Check size={16} />
+                  </button>
+                </div>
+                <div className="bg-background/50">
+                  <EmbedPreview 
+                    layout={selectedLayout}
+                    cardStyle={selectedStyle}
+                    customStyles={customStyles}
+                  />
+                </div>
+              </div>
+            )}
+            
+            <div className="flex gap-3 pt-4 border-t border-border">
               <button
                 onClick={saveCustomization}
                 disabled={saving}
-                className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
+                className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 text-sm shadow-lg hover:shadow-xl"
               >
-                {saving ? 'Saving...' : 'Save Customization'}
+                {saving ? 'Saving...' : '💾 Save Customization'}
               </button>
               <button
-                onClick={() => setShowPreview(!showPreview)}
-                className="bg-secondary/30 hover:bg-secondary/50 text-foreground px-6 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+                onClick={() => setCustomStyles({
+                  backgroundColor: '#1a1a1a',
+                  textColor: '#ffffff',
+                  accentColor: '#8b5cf6',
+                  starColor: '#eab308',
+                  fontFamily: 'Inter',
+                  borderRadius: '12',
+                  containerBackground: 'transparent',
+                  showImages: true
+                })}
+                className="px-6 py-3 rounded-lg border border-border hover:bg-secondary/30 transition-colors text-sm font-medium"
               >
-                <Eye size={18} />
-                {showPreview ? 'Hide Preview' : 'Show Preview'}
+                Reset to Default
               </button>
             </div>
           </div>
         )}
       </div>
-
-      {/* Live Preview */}
-      {showPreview && (
-        <div className="mt-6 border-t border-border pt-6">
-          <h3 className="font-bold mb-4 flex items-center gap-2">
-            <Eye size={18} className="text-primary" />
-            Live Preview - See Changes in Real-Time
-          </h3>
-          <div className="border border-border rounded-lg overflow-hidden">
-            <EmbedPreview 
-              layout={selectedLayout}
-              cardStyle={selectedStyle}
-              customStyles={customStyles}
-            />
-          </div>
-          <p className="text-xs text-muted-foreground mt-2 italic">
-            Preview updates instantly as you change settings. Click "Save Changes" to persist.
-          </p>
-        </div>
-      )}
     </div>
   );
 }

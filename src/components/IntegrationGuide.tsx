@@ -11,9 +11,10 @@ interface IntegrationGuideProps {
 }
 
 export default function IntegrationGuide({ spaceId, baseUrl }: IntegrationGuideProps) {
-  const [codeLanguage, setCodeLanguage] = useState<'html' | 'react' | 'python'>('html');
+  const [codeLanguage, setCodeLanguage] = useState<'html' | 'react' | 'nextjs' | 'python'>('html');
   const [copied, setCopied] = useState(false);
-  const [reactMode, setReactMode] = useState<'package' | 'tailwind'>('package');
+  const [reactMode, setReactMode] = useState<'vite' | 'cra'>('vite');
+  const [nextMode, setNextMode] = useState<'app' | 'pages'>('app');
 
   const handleCopy = (code: string) => {
     navigator.clipboard.writeText(code);
@@ -27,53 +28,191 @@ export default function IntegrationGuide({ spaceId, baseUrl }: IntegrationGuideP
   data-space-id="${spaceId}">
 </script>`;
 
-  const reactPackageCode = `// Install: npm install testispace-react-embed
-      
-import TestiSpaceEmbed from 'testispace-react-embed';
+  // React Vite Code
+  const reactViteCode = `// React + Vite Component
+// Install: npm install testispace-react-embed lucide-react
 
-<TestiSpaceEmbed 
-  spaceId="${spaceId}"
-/>`;
-
-  const reactTailwindCode = `import { Star } from 'lucide-react'; 
-import { useTestimonials } from 'testispace-react-embed';
+import { useEffect, useState } from 'react';
+import { Star } from 'lucide-react';
 
 export default function Testimonials() {
-  const { testimonials, loading } = useTestimonials('${spaceId}');
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  if (loading) return <div>Loading...</div>;
+  useEffect(() => {
+    fetch('${baseUrl}/api/spaces/${spaceId}/testimonials')
+      .then(res => res.json())
+      .then(data => {
+        setTestimonials(data.testimonials || []);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error:', err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div className="text-center py-8">Loading...</div>;
+  if (!testimonials.length) return null;
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+      {testimonials.map((t, i) => (
+        <div key={t._id || i} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border">
+          <div className="flex gap-1 mb-4">
+            {[...Array(5)].map((_, idx) => (
+              <Star 
+                key={idx} 
+                size={16} 
+                className={idx < t.rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"} 
+              />
+            ))}
+          </div>
+          {t.textContent && (
+            <p className="text-gray-700 dark:text-gray-300 mb-4 italic">"{t.textContent}"</p>
+          )}
+          <div className="flex items-center gap-3 mt-4 pt-4 border-t">
+            <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">
+              {t.name?.[0] || 'A'}
+            </div>
+            <div>
+              <div className="font-semibold">{t.name || 'Anonymous'}</div>
+              {t.email && <div className="text-sm text-gray-500">{t.email}</div>}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}`;
+
+  // Create React App Code (with CSS import)
+  const reactCRACode = `// Create React App Component
+// Install: npm install testispace-react-embed lucide-react
+
+import { useEffect, useState } from 'react';
+import { Star } from 'lucide-react';
+import './Testimonials.css'; // Import your CSS file
+
+export default function Testimonials() {
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('${baseUrl}/api/spaces/${spaceId}/testimonials')
+      .then(res => res.json())
+      .then(data => {
+        setTestimonials(data.testimonials || []);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error:', err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div className="loading">Loading...</div>;
+  if (!testimonials.length) return null;
+
+  return (
+    <div className="testimonials-grid">
+      {testimonials.map((t, i) => (
+        <div key={t._id || i} className="testimonial-card">
+          <div className="rating">
+            {[...Array(5)].map((_, idx) => (
+              <Star 
+                key={idx} 
+                size={16} 
+                className={idx < t.rating ? "star-filled" : "star-empty"} 
+              />
+            ))}
+          </div>
+          {t.textContent && <p className="content">"{t.textContent}"</p>}
+          <div className="author">
+            <div className="avatar">{t.name?.[0] || 'A'}</div>
+            <div className="author-info">
+              <div className="name">{t.name || 'Anonymous'}</div>
+              {t.email && <div className="email">{t.email}</div>}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}`;
+
+  // Next.js App Router Code
+  const nextjsAppCode = `// Next.js 13+ App Router Component
+// Install: npm install testispace-react-embed lucide-react
+// app/components/Testimonials.tsx
+'use client';
+
+import { useEffect, useState } from 'react';
+import { Star } from 'lucide-react';
+
+interface Testimonial {
+  _id: string;
+  name: string;
+  email?: string;
+  textContent: string;
+  rating: number;
+}
+
+export default function Testimonials() {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchTestimonials() {
+      try {
+        const res = await fetch('${baseUrl}/api/spaces/${spaceId}/testimonials');
+        const data = await res.json();
+        setTestimonials(data.testimonials || []);
+      } catch (err) {
+        console.error('Error:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchTestimonials();
+  }, []);
+
+  if (loading) {
+    return <div className="flex justify-center py-12">Loading...</div>;
+  }
+
   if (!testimonials.length) return null;
 
   return (
     <section className="py-12 bg-gray-50 dark:bg-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {testimonials.map((t, i) => (
-            <div key={t._id || i} className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 flex flex-col h-full">
-              {/* Header: Rating */}
+          {testimonials.map((t) => (
+            <div 
+              key={t._id} 
+              className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border hover:shadow-md transition-shadow"
+            >
               <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, index) => (
+                {[...Array(5)].map((_, idx) => (
                   <Star 
-                    key={index} 
+                    key={idx} 
                     size={16} 
-                    className={index < t.rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"} 
+                    className={idx < t.rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"} 
                   />
                 ))}
               </div>
-
-              {/* Content */}
-              <div className="flex-grow">
-                 {t.content && <p className="text-gray-700 dark:text-gray-300 italic mb-4">"{t.content}"</p>}
-              </div>
-
-              {/* Author */}
-              <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100 dark:border-slate-700">
-                <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">
-                  {t.userDetails?.name?.[0] || 'A'}
+              {t.textContent && (
+                <p className="text-gray-700 dark:text-gray-300 italic mb-4">
+                  "{t.textContent}"
+                </p>
+              )}
+              <div className="flex items-center gap-3 mt-4 pt-4 border-t">
+                <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 font-bold">
+                  {t.name?.[0] || 'A'}
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900 dark:text-white">{t.userDetails?.name || 'Anonymous'}</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">{t.userDetails?.designation}</div>
+                  <div className="font-semibold">{t.name || 'Anonymous'}</div>
+                  {t.email && <div className="text-sm text-gray-500">{t.email}</div>}
                 </div>
               </div>
             </div>
@@ -81,6 +220,77 @@ export default function Testimonials() {
         </div>
       </div>
     </section>
+  );
+}`;
+
+  // Next.js Pages Router Code
+  const nextjsPagesCode = `// Next.js Pages Router Component
+// Install: npm install testispace-react-embed lucide-react
+// pages/index.tsx or components/Testimonials.tsx
+
+import { useEffect, useState } from 'react';
+import { Star } from 'lucide-react';
+
+interface Testimonial {
+  _id: string;
+  name: string;
+  email?: string;
+  textContent: string;
+  rating: number;
+}
+
+export default function Testimonials() {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('${baseUrl}/api/spaces/${spaceId}/testimonials')
+      .then(res => res.json())
+      .then(data => {
+        setTestimonials(data.testimonials || []);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error:', err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (!testimonials.length) return null;
+
+  return (
+    <div className="py-12">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {testimonials.map((t) => (
+            <div key={t._id} className="bg-white p-6 rounded-xl shadow-lg border">
+              <div className="flex gap-1 mb-4">
+                {[...Array(5)].map((_, idx) => (
+                  <Star 
+                    key={idx} 
+                    size={16} 
+                    className={idx < t.rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200"} 
+                  />
+                ))}
+              </div>
+              {t.textContent && (
+                <p className="text-gray-700 italic mb-4">"{t.textContent}"</p>
+              )}
+              <div className="flex items-center gap-3 mt-4 pt-4 border-t">
+                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">
+                  {t.name?.[0] || 'A'}
+                </div>
+                <div>
+                  <div className="font-semibold">{t.name}</div>
+                  {t.email && <div className="text-sm text-gray-500">{t.email}</div>}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }`;
 
@@ -104,7 +314,13 @@ def testimonials():
   const getCurrentCode = () => {
     if (codeLanguage === 'html') return htmlCode;
     if (codeLanguage === 'python') return pythonCode;
-    return reactMode === 'package' ? reactPackageCode : reactTailwindCode;
+    if (codeLanguage === 'react') {
+      return reactMode === 'vite' ? reactViteCode : reactCRACode;
+    }
+    if (codeLanguage === 'nextjs') {
+      return nextMode === 'app' ? nextjsAppCode : nextjsPagesCode;
+    }
+    return htmlCode;
   };
 
   const getCurrentLanguageInfo = () => {
@@ -112,7 +328,15 @@ def testimonials():
       case 'html':
         return { title: 'HTML', description: 'Simple script tag integration for any website' };
       case 'react':
-        return { title: 'React', description: 'Component integration for React applications' };
+        return { 
+          title: reactMode === 'vite' ? 'React + Vite' : 'Create React App', 
+          description: reactMode === 'vite' ? 'Modern React with Vite bundler' : 'Traditional Create React App setup'
+        };
+      case 'nextjs':
+        return { 
+          title: nextMode === 'app' ? 'Next.js App Router' : 'Next.js Pages Router',
+          description: nextMode === 'app' ? 'Next.js 13+ with App Directory' : 'Next.js with Pages Directory'
+        };
       case 'python':
         return { title: 'Python', description: 'Flask/Django template integration' };
     }
@@ -124,8 +348,8 @@ def testimonials():
   return (
     <div className="glass-card p-6 rounded-xl border border-border">
       {/* Language Selection Tabs */}
-      <div className="flex gap-2 mb-6">
-        {['html', 'react', 'python'].map((lang) => (
+      <div className="flex gap-2 mb-6 flex-wrap">
+        {['html', 'react', 'nextjs', 'python'].map((lang) => (
           <button
             key={lang}
             onClick={() => setCodeLanguage(lang as any)}
@@ -135,7 +359,7 @@ def testimonials():
                 : 'bg-secondary/30 text-foreground hover:bg-secondary/50'
             }`}
           >
-            {lang.toUpperCase()}
+            {lang === 'nextjs' ? 'Next.js' : lang.toUpperCase()}
           </button>
         ))}
       </div>
@@ -159,20 +383,42 @@ def testimonials():
       {codeLanguage === 'react' && (
         <div className="flex gap-2 bg-secondary/20 p-1 rounded-lg mb-4 w-fit">
           <button
-            onClick={() => setReactMode('package')}
+            onClick={() => setReactMode('vite')}
             className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-              reactMode === 'package' ? 'bg-primary text-white shadow' : 'hover:bg-white/10'
+              reactMode === 'vite' ? 'bg-primary text-white shadow' : 'hover:bg-white/10'
             }`}
           >
-            NPM Package
+            Vite
           </button>
           <button
-            onClick={() => setReactMode('tailwind')}
+            onClick={() => setReactMode('cra')}
             className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-              reactMode === 'tailwind' ? 'bg-primary text-white shadow' : 'hover:bg-white/10'
+              reactMode === 'cra' ? 'bg-primary text-white shadow' : 'hover:bg-white/10'
             }`}
           >
-            Tailwind Code
+            Create React App
+          </button>
+        </div>
+      )}
+
+      {/* Next.js Sub-options */}
+      {codeLanguage === 'nextjs' && (
+        <div className="flex gap-2 bg-secondary/20 p-1 rounded-lg mb-4 w-fit">
+          <button
+            onClick={() => setNextMode('app')}
+            className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+              nextMode === 'app' ? 'bg-primary text-white shadow' : 'hover:bg-white/10'
+            }`}
+          >
+            App Router (13+)
+          </button>
+          <button
+            onClick={() => setNextMode('pages')}
+            className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+              nextMode === 'pages' ? 'bg-primary text-white shadow' : 'hover:bg-white/10'
+            }`}
+          >
+            Pages Router
           </button>
         </div>
       )}
@@ -180,7 +426,11 @@ def testimonials():
       {/* Code Display */}
       <div className="relative">
         <SyntaxHighlighter
-          language={codeLanguage === 'html' ? 'markup' : (codeLanguage === 'react' && reactMode === 'tailwind' ? 'tsx' : codeLanguage)}
+          language={
+            codeLanguage === 'html' ? 'markup' : 
+            (codeLanguage === 'react' || codeLanguage === 'nextjs') ? 'tsx' : 
+            codeLanguage
+          }
           style={vscDarkPlus}
           customStyle={{
             borderRadius: '0.75rem',
