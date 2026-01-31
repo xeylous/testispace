@@ -11,6 +11,12 @@ interface Testimonial {
   src?: string;
   avatar?: string;
   rating: number;
+  displaySettings?: {
+    showExperience: boolean;
+    showImage: boolean;
+    showName: boolean;
+    showDesignation: boolean;
+  };
 }
 
 interface CardStackTestimonialsProps {
@@ -41,7 +47,7 @@ export function CardStackTestimonials({
     starColor = "#eab308",
     fontFamily = "Inter",
     borderRadius = "12",
-    showImages = true,
+    showImages: globalShowImages = true,
   } = customStyles;
 
   useEffect(() => {
@@ -62,6 +68,11 @@ export function CardStackTestimonials({
           const offset = (index - currentIndex + testimonials.length) % testimonials.length;
           const isActive = offset === 0;
           
+          const showImage = globalShowImages && (testimonial.displaySettings?.showImage !== false);
+          const showName = (testimonial.displaySettings?.showName !== false);
+          const showDesignation = (testimonial.displaySettings?.showDesignation !== false);
+          const showExperience = (testimonial.displaySettings?.showExperience !== false);
+
           return (
             <div
               key={index}
@@ -90,12 +101,14 @@ export function CardStackTestimonials({
               >
                 {/* Quote */}
                 <div>
-                  <blockquote
-                    className="text-lg md:text-xl font-medium leading-relaxed mb-6"
-                    style={{ color: textColor }}
-                  >
-                    "{testimonial.quote || testimonial.textContent}"
-                  </blockquote>
+                  {showExperience && (
+                    <blockquote
+                      className="text-lg md:text-xl font-medium leading-relaxed mb-6"
+                      style={{ color: textColor }}
+                    >
+                      "{testimonial.quote || testimonial.textContent}"
+                    </blockquote>
+                  )}
 
                   {/* Rating */}
                   <div className="flex gap-1 mb-4">
@@ -112,7 +125,7 @@ export function CardStackTestimonials({
 
                 {/* Author */}
                 <div className="flex items-center gap-4">
-                  {showImages && (
+                  {showImage && (
                     <img
                       src={testimonial.src || testimonial.avatar}
                       alt={testimonial.name}
@@ -121,12 +134,16 @@ export function CardStackTestimonials({
                     />
                   )}
                   <div>
-                    <div className="font-bold" style={{ color: textColor }}>
-                      {testimonial.name}
-                    </div>
-                    <div className="text-sm opacity-70" style={{ color: textColor }}>
-                      {testimonial.designation}
-                    </div>
+                    {showName && (
+                      <div className="font-bold" style={{ color: textColor }}>
+                        {testimonial.name}
+                      </div>
+                    )}
+                    {showDesignation && (
+                      <div className="text-sm opacity-70" style={{ color: textColor }}>
+                        {testimonial.designation}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

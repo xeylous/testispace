@@ -11,6 +11,12 @@ interface Testimonial {
   src?: string;
   avatar?: string;
   rating: number;
+  displaySettings?: {
+    showExperience: boolean;
+    showImage: boolean;
+    showName: boolean;
+    showDesignation: boolean;
+  };
 }
 
 interface MarqueeTestimonialsProps {
@@ -37,72 +43,85 @@ export function MarqueeTestimonials({
     starColor = "#eab308",
     fontFamily = "Inter",
     borderRadius = "12",
-    showImages = true,
+    showImages: globalShowImages = true,
   } = customStyles;
 
   return (
     <div className="relative w-full py-12 overflow-hidden" style={{ fontFamily }}>
       <div className="marquee-container">
         <div className="marquee-content">
-          {[...testimonials, ...testimonials].map((testimonial, index) => (
-            <div
-              key={index}
-              className="inline-block mx-4 w-[350px] transform perspective-1000"
-              style={{
-                animation: `marquee 20s linear infinite`,
-              }}
-            >
+          {[...testimonials, ...testimonials].map((testimonial, index) => {
+            const showImage = globalShowImages && (testimonial.displaySettings?.showImage !== false);
+            const showName = (testimonial.displaySettings?.showName !== false);
+            const showDesignation = (testimonial.displaySettings?.showDesignation !== false);
+            const showExperience = (testimonial.displaySettings?.showExperience !== false);
+
+            return (
               <div
-                className="p-6 h-full flex flex-col transform transition-transform hover:scale-105 hover:-translate-y-2"
+                key={index}
+                className="inline-block mx-4 w-[350px] transform perspective-1000"
                 style={{
-                  backgroundColor,
-                  borderRadius: `${borderRadius}px`,
-                  boxShadow: `0 10px 40px ${accentColor}30`,
-                  transformStyle: "preserve-3d",
+                  animation: `marquee 20s linear infinite`,
                 }}
               >
-                {/* Rating */}
-                <div className="flex gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      fill={i < testimonial.rating ? starColor : "none"}
-                      stroke={i < testimonial.rating ? starColor : textColor}
-                    />
-                  ))}
-                </div>
-
-                {/* Quote */}
-                <p
-                  className="text-sm leading-relaxed mb-6 flex-grow"
-                  style={{ color: textColor }}
+                <div
+                  className="p-6 h-full flex flex-col transform transition-transform hover:scale-105 hover:-translate-y-2"
+                  style={{
+                    backgroundColor,
+                    borderRadius: `${borderRadius}px`,
+                    boxShadow: `0 10px 40px ${accentColor}30`,
+                    transformStyle: "preserve-3d",
+                  }}
                 >
-                  "{testimonial.quote || testimonial.textContent}"
-                </p>
+                  {/* Rating */}
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        size={16}
+                        fill={i < testimonial.rating ? starColor : "none"}
+                        stroke={i < testimonial.rating ? starColor : textColor}
+                      />
+                    ))}
+                  </div>
 
-                {/* Author */}
-                <div className="flex items-center gap-3">
-                  {showImages && (
-                    <img
-                      src={testimonial.src || testimonial.avatar}
-                      alt={testimonial.name}
-                      className="w-10 h-10 rounded-full object-cover"
-                      style={{ borderRadius: `${borderRadius}px` }}
-                    />
+                  {/* Quote */}
+                  {showExperience && (
+                    <p
+                      className="text-sm leading-relaxed mb-6 flex-grow"
+                      style={{ color: textColor }}
+                    >
+                      "{testimonial.quote || testimonial.textContent}"
+                    </p>
                   )}
-                  <div>
-                    <div className="font-bold text-sm" style={{ color: textColor }}>
-                      {testimonial.name}
-                    </div>
-                    <div className="text-xs opacity-70" style={{ color: textColor }}>
-                      {testimonial.designation}
+
+                  {/* Author */}
+                  <div className="flex items-center gap-3">
+                    {showImage && (
+                      <img
+                        src={testimonial.src || testimonial.avatar}
+                        alt={testimonial.name}
+                        className="w-10 h-10 rounded-full object-cover"
+                        style={{ borderRadius: `${borderRadius}px` }}
+                      />
+                    )}
+                    <div>
+                      {showName && (
+                        <div className="font-bold text-sm" style={{ color: textColor }}>
+                          {testimonial.name}
+                        </div>
+                      )}
+                      {showDesignation && (
+                        <div className="text-xs opacity-70" style={{ color: textColor }}>
+                          {testimonial.designation}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

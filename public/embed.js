@@ -155,28 +155,39 @@
             const card = document.createElement('div');
             card.className = 'ts-card';
 
+            const settings = t.displaySettings || { showExperience: true, showImage: true, showName: true, showDesignation: true };
+            const showExperience = settings.showExperience !== false;
+            const showImage = (custom.showImages !== false) && (settings.showImage !== false);
+            const showName = settings.showName !== false;
+            const showDesignation = settings.showDesignation !== false;
+
             const textContent = t.textContent || (t.type === 'text' ? t.content : '');
             const mediaUrl = t.mediaUrl || (t.type !== 'text' ? t.content : '');
             const mediaType = t.mediaType !== 'none' ? t.mediaType : (t.type !== 'text' ? t.type : 'none');
 
             let mediaHtml = '';
-            if (mediaType === 'video') {
-                mediaHtml = `<div class="ts-media"><video src="${mediaUrl}" controls></video></div>`;
-            } else if (mediaType === 'image') {
-                mediaHtml = `<div class="ts-media"><img src="${mediaUrl}" alt="Testimonial"></div>`;
+            if (showImage) {
+                if (mediaType === 'video') {
+                    mediaHtml = `<div class="ts-media"><video src="${mediaUrl}" controls></video></div>`;
+                } else if (mediaType === 'image') {
+                    mediaHtml = `<div class="ts-media"><img src="${mediaUrl}" alt="Testimonial"></div>`;
+                }
             }
+
+            const name = (t.userDetails && t.userDetails.name) || t.name || "Anonymous";
+            const designation = (t.userDetails && t.userDetails.designation) || t.designation || "";
 
             card.innerHTML = `
                 <div class="ts-header" style="color: ${config.starColor}">${'★'.repeat(t.rating)}</div>
                 <div class="ts-content">
-                    ${textContent ? `<div class="ts-text">"${textContent}"</div>` : ''}
+                    ${(showExperience && textContent) ? `<div class="ts-text">"${textContent}"</div>` : ''}
                     ${mediaHtml}
                 </div>
                 <div class="ts-author">
-                    <div class="ts-avatar">${t.userDetails.name.charAt(0).toUpperCase()}</div>
+                    <div class="ts-avatar">${name.charAt(0).toUpperCase()}</div>
                     <div class="ts-author-info">
-                        <div class="ts-name">${t.userDetails.name}</div>
-                        ${t.userDetails.designation ? `<div class="ts-designation">${t.userDetails.designation}</div>` : ''}
+                        ${showName ? `<div class="ts-name">${name}</div>` : ''}
+                        ${(showDesignation && designation) ? `<div class="ts-designation">${designation}</div>` : ''}
                     </div>
                 </div>
             `;
