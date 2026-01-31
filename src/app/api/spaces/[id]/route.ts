@@ -4,6 +4,8 @@ import { authOptions } from "../../auth/[...nextauth]/route";
 import connectDB from "@/lib/db";
 import Space from "@/models/Space";
 import Testimonial from "@/models/Testimonial";
+import { pusherServer } from "@/lib/pusher";
+import redis from "@/lib/redis";
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
     const session = await getServerSession(authOptions);
@@ -33,6 +35,18 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         if (selectedTestimonials !== undefined) space.selectedTestimonials = selectedTestimonials;
 
         await space.save();
+
+        // Invalidate Cache
+        await redis.del(`embed_v2:${id}`);
+
+        await pusherServer.trigger(`space-${id}`, 'update', {
+            type: 'settings-updated',
+            space: {
+                embedLayout: space.embedLayout,
+                cardStyle: space.cardStyle,
+                customStyles: space.customStyles
+            }
+        });
 
         return NextResponse.json({ space }, { status: 200 });
     } catch (error) {
