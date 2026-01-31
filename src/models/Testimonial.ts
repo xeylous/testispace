@@ -16,6 +16,12 @@ export interface ITestimonial extends Document {
     };
     isApproved: boolean;
     isArchived: boolean;
+    displaySettings: {
+        showExperience: boolean;
+        showImage: boolean;
+        showName: boolean;
+        showDesignation: boolean;
+    };
     createdAt: Date;
 }
 
@@ -35,6 +41,12 @@ const TestimonialSchema = new Schema<ITestimonial>({
     },
     isApproved: { type: Boolean, default: false },
     isArchived: { type: Boolean, default: false },
+    displaySettings: {
+        showExperience: { type: Boolean, default: true },
+        showImage: { type: Boolean, default: true },
+        showName: { type: Boolean, default: true },
+        showDesignation: { type: Boolean, default: true },
+    },
     createdAt: { type: Date, default: Date.now },
 });
 

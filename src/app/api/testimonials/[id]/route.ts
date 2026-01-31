@@ -24,7 +24,7 @@ async function getTestimonialWithAuth(id: string) {
 
 export async function PATCH(req: Request, { params }: { params: any }) {
     const { id } = await params;
-    const { isApproved, isArchived } = await req.json();
+    const { isApproved, isArchived, displaySettings } = await req.json();
 
     const result = await getTestimonialWithAuth(id);
     if (!result) {
@@ -35,6 +35,12 @@ export async function PATCH(req: Request, { params }: { params: any }) {
 
     if (isApproved !== undefined) testimonial.isApproved = isApproved;
     if (isArchived !== undefined) testimonial.isArchived = isArchived;
+    if (displaySettings !== undefined) {
+        testimonial.displaySettings = {
+            ...testimonial.displaySettings,
+            ...displaySettings
+        };
+    }
 
     await testimonial.save();
 

@@ -26,26 +26,29 @@ const mockTestimonials = [
     designation: "Product Manager",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
     rating: 5,
-    textContent: "This product has completely transformed how our team collaborates. Highly recommend!"
+    textContent: "This product has completely transformed how our team collaborates. Highly recommend!",
+    displaySettings: { showExperience: true, showImage: true, showName: true, showDesignation: true }
   },
   {
     name: "Michael Chen",
     designation: "Software Engineer",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Michael",
     rating: 5,
-    textContent: "Amazing experience! The interface is intuitive and the features are exactly what we needed."
+    textContent: "Amazing experience! The interface is intuitive and the features are exactly what we needed.",
+    displaySettings: { showExperience: true, showImage: true, showName: true, showDesignation: true }
   },
   {
     name: "Emily Davis",
     designation: "Designer",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emily",
     rating: 4,
-    textContent: "Great tool for managing testimonials. The customization options are fantastic!"
+    textContent: "Great tool for managing testimonials. The customization options are fantastic!",
+    displaySettings: { showExperience: true, showImage: true, showName: true, showDesignation: true }
   }
 ];
 
 export default function EmbedPreview({ layout, cardStyle, customStyles }: EmbedPreviewProps) {
-  const showImages = customStyles.showImages !== false; // Default to true
+  const globalShowImages = customStyles.showImages !== false; // Default to true
 
   const getCardStyle = () => {
     const baseStyle = {
@@ -147,41 +150,56 @@ export default function EmbedPreview({ layout, cardStyle, customStyles }: EmbedP
       fontFamily: customStyles.fontFamily 
     }}>
       <div className={getLayoutClass()}>
-        {mockTestimonials.map((testimonial, index) => (
-          <div
-            key={index}
-            className={`p-6 transition-all ${layout === 'carousel' ? 'min-w-[300px] snap-center' : ''}`}
-            style={cardStyles}
-          >
-            <div className="flex items-center gap-3 mb-4">
-              {showImages && (
-                <img
-                  src={testimonial.avatar}
-                  alt={testimonial.name}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-              )}
-              <div>
-                <div className="font-bold" style={{ color: customStyles.textColor }}>
-                  {testimonial.name}
-                </div>
-                <div className="text-sm opacity-70" style={{ color: customStyles.textColor }}>
-                  {testimonial.designation}
-                </div>
+        {mockTestimonials.map((testimonial, index) => {
+          const showImage = globalShowImages && (testimonial.displaySettings?.showImage !== false);
+          const showName = (testimonial.displaySettings?.showName !== false);
+          const showDesignation = (testimonial.displaySettings?.showDesignation !== false);
+          const showExperience = (testimonial.displaySettings?.showExperience !== false);
+
+          return (
+            <div
+              key={index}
+              className={`p-6 transition-all ${layout === 'carousel' ? 'min-w-[300px] snap-center' : ''}`}
+              style={cardStyles}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                {showImage && (
+                  <img
+                    src={testimonial.avatar}
+                    alt={testimonial.name}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                )}
+                {(showName || showDesignation) && (
+                  <div>
+                    {showName && (
+                      <div className="font-bold" style={{ color: customStyles.textColor }}>
+                        {testimonial.name}
+                      </div>
+                    )}
+                    {showDesignation && (
+                      <div className="text-sm opacity-70" style={{ color: customStyles.textColor }}>
+                        {testimonial.designation}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
+              
+              <div className="flex gap-1 mb-3">
+                {[...Array(testimonial.rating)].map((_, i) => (
+                  <Star key={i} size={16} fill={customStyles.starColor} color={customStyles.starColor} />
+                ))}
+              </div>
+              
+              {showExperience && (
+                <p className="text-sm leading-relaxed" style={{ color: customStyles.textColor }}>
+                  {testimonial.textContent}
+                </p>
+              )}
             </div>
-            
-            <div className="flex gap-1 mb-3">
-              {[...Array(testimonial.rating)].map((_, i) => (
-                <Star key={i} size={16} fill={customStyles.starColor} color={customStyles.starColor} />
-              ))}
-            </div>
-            
-            <p className="text-sm leading-relaxed" style={{ color: customStyles.textColor }}>
-              {testimonial.textContent}
-            </p>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

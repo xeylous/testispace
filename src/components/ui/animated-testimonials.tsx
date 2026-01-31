@@ -11,6 +11,12 @@ interface Testimonial {
   src?: string;
   avatar?: string;
   rating: number;
+  displaySettings?: {
+    showExperience: boolean;
+    showImage: boolean;
+    showName: boolean;
+    showDesignation: boolean;
+  };
 }
 
 interface AnimatedTestimonialsProps {
@@ -42,7 +48,7 @@ export function AnimatedTestimonials({
     starColor = "#eab308",
     fontFamily = "Inter",
     borderRadius = "12",
-    showImages = true,
+    showImages: globalShowImages = true,
   } = customStyles;
 
   useEffect(() => {
@@ -70,6 +76,12 @@ export function AnimatedTestimonials({
   };
 
   const currentTestimonial = testimonials[currentIndex];
+  
+  // Per-testimonial display settings
+  const showImage = globalShowImages && (currentTestimonial.displaySettings?.showImage !== false);
+  const showName = currentTestimonial.displaySettings?.showName !== false;
+  const showDesignation = currentTestimonial.displaySettings?.showDesignation !== false;
+  const showExperience = currentTestimonial.displaySettings?.showExperience !== false;
 
   return (
     <div
@@ -87,9 +99,9 @@ export function AnimatedTestimonials({
           }}
         >
           {/* Content */}
-          <div className={`grid ${showImages ? "md:grid-cols-2" : "grid-cols-1"} gap-8 p-8 md:p-12`}>
+          <div className={`grid ${showImage ? "md:grid-cols-2" : "grid-cols-1"} gap-8 p-8 md:p-12`}>
             {/* Image Section */}
-            {showImages && (
+            {showImage && (
               <div className="flex items-center justify-center">
                 <div
                   className={`relative transition-all duration-500 ${
@@ -118,7 +130,7 @@ export function AnimatedTestimonials({
                 isAnimating
                   ? "opacity-0 translate-x-8"
                   : "opacity-100 translate-x-0"
-              } ${!showImages && "text-center items-center max-w-2xl mx-auto"}`}
+              } ${!showImage && "text-center items-center max-w-2xl mx-auto"}`}
             >
               {/* Rating */}
               <div className="flex gap-1 mb-6">
@@ -134,27 +146,33 @@ export function AnimatedTestimonials({
               </div>
 
               {/* Quote */}
-              <blockquote
-                className={`${showImages ? "text-xl md:text-2xl" : "text-2xl md:text-3xl"} font-medium leading-relaxed mb-8`}
-                style={{ color: textColor }}
-              >
-                "{currentTestimonial.quote || currentTestimonial.textContent}"
-              </blockquote>
+              {showExperience && (
+                <blockquote
+                  className={`${showImage ? "text-xl md:text-2xl" : "text-2xl md:text-3xl"} font-medium leading-relaxed mb-8`}
+                  style={{ color: textColor }}
+                >
+                  "{currentTestimonial.quote || currentTestimonial.textContent}"
+                </blockquote>
+              )}
 
               {/* Author */}
-              <div className={!showImages ? "text-center" : ""}>
-                <div
-                  className="text-lg font-bold mb-1"
-                  style={{ color: textColor }}
-                >
-                  {currentTestimonial.name}
-                </div>
-                <div
-                  className="text-sm opacity-70"
-                  style={{ color: textColor }}
-                >
-                  {currentTestimonial.designation}
-                </div>
+              <div className={!showImage ? "text-center" : ""}>
+                {showName && (
+                  <div
+                    className="text-lg font-bold mb-1"
+                    style={{ color: textColor }}
+                  >
+                    {currentTestimonial.name}
+                  </div>
+                )}
+                {showDesignation && (
+                  <div
+                    className="text-sm opacity-70"
+                    style={{ color: textColor }}
+                  >
+                    {currentTestimonial.designation}
+                  </div>
+                )}
               </div>
             </div>
           </div>

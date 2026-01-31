@@ -30,267 +30,64 @@ export default function IntegrationGuide({ spaceId, baseUrl }: IntegrationGuideP
 
   // React Vite Code
   const reactViteCode = `// React + Vite Component
-// Install: npm install testispace-react-embed lucide-react
+// Install: npm install testispace-react-embed
 
-import { useEffect, useState } from 'react';
-import { Star } from 'lucide-react';
+import TestiSpaceEmbed from 'testispace-react-embed';
 
 export default function Testimonials() {
-  const [testimonials, setTestimonials] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('${baseUrl}/api/spaces/${spaceId}/testimonials')
-      .then(res => res.json())
-      .then(data => {
-        setTestimonials(data.testimonials || []);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error:', err);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) return <div className="text-center py-8">Loading...</div>;
-  if (!testimonials.length) return null;
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-      {testimonials.map((t, i) => (
-        <div key={t._id || i} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border">
-          <div className="flex gap-1 mb-4">
-            {[...Array(5)].map((_, idx) => (
-              <Star 
-                key={idx} 
-                size={16} 
-                className={idx < t.rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"} 
-              />
-            ))}
-          </div>
-          {t.textContent && (
-            <p className="text-gray-700 dark:text-gray-300 mb-4 italic">"{t.textContent}"</p>
-          )}
-          <div className="flex items-center gap-3 mt-4 pt-4 border-t">
-            <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">
-              {t.name?.[0] || 'A'}
-            </div>
-            <div>
-              <div className="font-semibold">{t.name || 'Anonymous'}</div>
-              {t.email && <div className="text-sm text-gray-500">{t.email}</div>}
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
+    <TestiSpaceEmbed 
+      spaceId="${spaceId}" 
+      baseUrl="${baseUrl}"
+    />
   );
 }`;
 
   // Create React App Code (with CSS import)
   const reactCRACode = `// Create React App Component
-// Install: npm install testispace-react-embed lucide-react
+// Install: npm install testispace-react-embed
 
-import { useEffect, useState } from 'react';
-import { Star } from 'lucide-react';
-import './Testimonials.css'; // Import your CSS file
+import TestiSpaceEmbed from 'testispace-react-embed';
 
 export default function Testimonials() {
-  const [testimonials, setTestimonials] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('${baseUrl}/api/spaces/${spaceId}/testimonials')
-      .then(res => res.json())
-      .then(data => {
-        setTestimonials(data.testimonials || []);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error:', err);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) return <div className="loading">Loading...</div>;
-  if (!testimonials.length) return null;
-
   return (
-    <div className="testimonials-grid">
-      {testimonials.map((t, i) => (
-        <div key={t._id || i} className="testimonial-card">
-          <div className="rating">
-            {[...Array(5)].map((_, idx) => (
-              <Star 
-                key={idx} 
-                size={16} 
-                className={idx < t.rating ? "star-filled" : "star-empty"} 
-              />
-            ))}
-          </div>
-          {t.textContent && <p className="content">"{t.textContent}"</p>}
-          <div className="author">
-            <div className="avatar">{t.name?.[0] || 'A'}</div>
-            <div className="author-info">
-              <div className="name">{t.name || 'Anonymous'}</div>
-              {t.email && <div className="email">{t.email}</div>}
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
+    <TestiSpaceEmbed 
+      spaceId="${spaceId}" 
+      baseUrl="${baseUrl}"
+    />
   );
 }`;
 
   // Next.js App Router Code
   const nextjsAppCode = `// Next.js 13+ App Router Component
-// Install: npm install testispace-react-embed lucide-react
+// Install: npm install testispace-react-embed
 // app/components/Testimonials.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Star } from 'lucide-react';
-
-interface Testimonial {
-  _id: string;
-  name: string;
-  email?: string;
-  textContent: string;
-  rating: number;
-}
+import TestiSpaceEmbed from 'testispace-react-embed';
 
 export default function Testimonials() {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchTestimonials() {
-      try {
-        const res = await fetch('${baseUrl}/api/spaces/${spaceId}/testimonials');
-        const data = await res.json();
-        setTestimonials(data.testimonials || []);
-      } catch (err) {
-        console.error('Error:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchTestimonials();
-  }, []);
-
-  if (loading) {
-    return <div className="flex justify-center py-12">Loading...</div>;
-  }
-
-  if (!testimonials.length) return null;
-
   return (
-    <section className="py-12 bg-gray-50 dark:bg-slate-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {testimonials.map((t) => (
-            <div 
-              key={t._id} 
-              className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border hover:shadow-md transition-shadow"
-            >
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, idx) => (
-                  <Star 
-                    key={idx} 
-                    size={16} 
-                    className={idx < t.rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"} 
-                  />
-                ))}
-              </div>
-              {t.textContent && (
-                <p className="text-gray-700 dark:text-gray-300 italic mb-4">
-                  "{t.textContent}"
-                </p>
-              )}
-              <div className="flex items-center gap-3 mt-4 pt-4 border-t">
-                <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 font-bold">
-                  {t.name?.[0] || 'A'}
-                </div>
-                <div>
-                  <div className="font-semibold">{t.name || 'Anonymous'}</div>
-                  {t.email && <div className="text-sm text-gray-500">{t.email}</div>}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+    <TestiSpaceEmbed 
+      spaceId="${spaceId}" 
+      baseUrl="${baseUrl}"
+    />
   );
 }`;
 
   // Next.js Pages Router Code
   const nextjsPagesCode = `// Next.js Pages Router Component
-// Install: npm install testispace-react-embed lucide-react
+// Install: npm install testispace-react-embed
 // pages/index.tsx or components/Testimonials.tsx
 
-import { useEffect, useState } from 'react';
-import { Star } from 'lucide-react';
-
-interface Testimonial {
-  _id: string;
-  name: string;
-  email?: string;
-  textContent: string;
-  rating: number;
-}
+import TestiSpaceEmbed from 'testispace-react-embed';
 
 export default function Testimonials() {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('${baseUrl}/api/spaces/${spaceId}/testimonials')
-      .then(res => res.json())
-      .then(data => {
-        setTestimonials(data.testimonials || []);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error:', err);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) return <div>Loading...</div>;
-  if (!testimonials.length) return null;
-
   return (
-    <div className="py-12">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {testimonials.map((t) => (
-            <div key={t._id} className="bg-white p-6 rounded-xl shadow-lg border">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, idx) => (
-                  <Star 
-                    key={idx} 
-                    size={16} 
-                    className={idx < t.rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200"} 
-                  />
-                ))}
-              </div>
-              {t.textContent && (
-                <p className="text-gray-700 italic mb-4">"{t.textContent}"</p>
-              )}
-              <div className="flex items-center gap-3 mt-4 pt-4 border-t">
-                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">
-                  {t.name?.[0] || 'A'}
-                </div>
-                <div>
-                  <div className="font-semibold">{t.name}</div>
-                  {t.email && <div className="text-sm text-gray-500">{t.email}</div>}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+    <TestiSpaceEmbed 
+      spaceId="${spaceId}" 
+      baseUrl="${baseUrl}"
+    />
   );
 }`;
 

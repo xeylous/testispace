@@ -2,6 +2,13 @@
 import React, { useState, useMemo } from "react";
 import { Star, Video, FileText, Image, Copy, Check, CheckCircle, XCircle, Code, Trash2, Archive, Share2, Filter, ChevronLeft, ChevronRight, Search } from "lucide-react";
 
+interface DisplaySettings {
+  showExperience: boolean;
+  showImage: boolean;
+  showName: boolean;
+  showDesignation: boolean;
+}
+
 interface Testimonial {
   _id: string;
   textContent?: string;
@@ -17,6 +24,7 @@ interface Testimonial {
   };
   isApproved: boolean;
   isArchived: boolean;
+  displaySettings?: DisplaySettings;
   createdAt: string;
 }
 
@@ -83,6 +91,28 @@ export default function TestimonialsTable({
       (currentPage - 1) * itemsPerPage, 
       currentPage * itemsPerPage
   );
+
+  const handleUpdateDisplaySettings = async (id: string, setting: keyof DisplaySettings, value: boolean) => {
+    try {
+      const res = await fetch(`/api/testimonials/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          displaySettings: { [setting]: value }
+        }),
+      });
+
+      if (res.ok) {
+        setTestimonials(prev => prev.map(t => 
+          t._id === id 
+            ? { ...t, displaySettings: { ...t.displaySettings, [setting]: value } as any } 
+            : t
+        ));
+      }
+    } catch (err) {
+      console.error("Display update failed:", err);
+    }
+  };
 
   const handleAction = async (id: string, action: 'approve' | 'archive' | 'delete') => {
     setActionLoading(id);
@@ -233,6 +263,7 @@ export default function TestimonialsTable({
                 <th className="p-4 font-semibold">From</th>
                 {showSelection && <th className="p-4 font-semibold text-center">Select</th>}
                 <th className="p-4 font-semibold">Content Type</th>
+                <th className="p-4 font-semibold">Display</th>
                 <th className="p-4 font-semibold">Rating</th>
                 <th className="p-4 font-semibold">Status</th>
                 <th className="p-4 font-semibold">Actions</th>
@@ -298,6 +329,46 @@ export default function TestimonialsTable({
                             <p className="text-xs text-muted-foreground italic">No text content</p>
                         )}
                     </div>
+                    </td>
+                    <td className="p-4" onClick={e => e.stopPropagation()}>
+                        <div className="flex flex-wrap gap-2 justify-center max-w-[120px]">
+                            <div className="flex flex-col items-center gap-1" title="Show Experience">
+                                <span className="text-[9px] text-muted-foreground font-bold uppercase">Exp</span>
+                                <input 
+                                    type="checkbox" 
+                                    checked={t.displaySettings?.showExperience !== false}
+                                    onChange={(e) => handleUpdateDisplaySettings(t._id, 'showExperience', e.target.checked)}
+                                    className="w-3.5 h-3.5 rounded border-gray-300 text-primary cursor-pointer accent-primary"
+                                />
+                            </div>
+                            <div className="flex flex-col items-center gap-1" title="Show Image">
+                                <span className="text-[9px] text-muted-foreground font-bold uppercase">Img</span>
+                                <input 
+                                    type="checkbox" 
+                                    checked={t.displaySettings?.showImage !== false}
+                                    onChange={(e) => handleUpdateDisplaySettings(t._id, 'showImage', e.target.checked)}
+                                    className="w-3.5 h-3.5 rounded border-gray-300 text-primary cursor-pointer accent-primary"
+                                />
+                            </div>
+                            <div className="flex flex-col items-center gap-1" title="Show Name">
+                                <span className="text-[9px] text-muted-foreground font-bold uppercase">Name</span>
+                                <input 
+                                    type="checkbox" 
+                                    checked={t.displaySettings?.showName !== false}
+                                    onChange={(e) => handleUpdateDisplaySettings(t._id, 'showName', e.target.checked)}
+                                    className="w-3.5 h-3.5 rounded border-gray-300 text-primary cursor-pointer accent-primary"
+                                />
+                            </div>
+                            <div className="flex flex-col items-center gap-1" title="Show Designation">
+                                <span className="text-[9px] text-muted-foreground font-bold uppercase">Dest</span>
+                                <input 
+                                    type="checkbox" 
+                                    checked={t.displaySettings?.showDesignation !== false}
+                                    onChange={(e) => handleUpdateDisplaySettings(t._id, 'showDesignation', e.target.checked)}
+                                    className="w-3.5 h-3.5 rounded border-gray-300 text-primary cursor-pointer accent-primary"
+                                />
+                            </div>
+                        </div>
                     </td>
                     <td className="p-4">
                     <div className="flex items-center gap-1 text-yellow-500">

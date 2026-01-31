@@ -19,16 +19,39 @@ export async function GET(req: Request, { params }: { params: any }) {
         }
 
         await connectDB();
-        const testimonial = await Testimonial.findById(testimonialId);
+        const t = await Testimonial.findById(testimonialId).lean();
 
-        if (!testimonial || !testimonial.isApproved || testimonial.isArchived) {
+        if (!t || !t.isApproved || t.isArchived) {
             return NextResponse.json({ message: "Not found or not approved" }, { status: 404 });
         }
 
-        // Cache for 10 minutes
-        await redis.setex(`embed:single:${testimonialId}`, 600, JSON.stringify(testimonial));
+        const rawMediaType = t.mediaType || t.type;
+        const isMedia = rawMediaType === 'image' || rawMediaType === 'video';
 
-        return NextResponse.json(testimonial, {
+        const mapped = {
+            _id: t._id.toString(),
+            textContent: t.textContent || (!isMedia ? t.content : ""),
+            mediaUrl: t.mediaUrl || (isMedia ? t.content : ""),
+            mediaType: isMedia ? rawMediaType : 'none',
+            rating: t.rating || 5,
+            displaySettings: t.displaySettings || {
+                showExperience: true,
+                showImage: true,
+                showName: true,
+                showDesignation: true
+            },
+            userDetails: {
+                name: t.userDetails?.name || "Anonymous",
+                designation: t.userDetails?.designation || "",
+                avatar: t.userDetails?.avatar || "",
+            },
+            createdAt: t.createdAt
+        };
+
+        // Cache for 10 minutes
+        await redis.setex(`embed:single:${testimonialId}`, 600, JSON.stringify(mapped));
+
+        return NextResponse.json(mapped, {
             headers: {
                 "Access-Control-Allow-Origin": "*",
                 "Access-Control-Allow-Methods": "GET, OPTIONS",

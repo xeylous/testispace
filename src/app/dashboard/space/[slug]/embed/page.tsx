@@ -37,6 +37,12 @@ async function getSpaceEmbedData(slug: string) {
         designation: t.userDetails?.designation || '',
         avatar: t.userDetails?.avatar || '',
       },
+      displaySettings: t.displaySettings || {
+        showExperience: true,
+        showImage: true,
+        showName: true,
+        showDesignation: true
+      },
       isApproved: t.isApproved,
       isArchived: t.isArchived,
       createdAt: t.createdAt ? t.createdAt.toISOString() : new Date().toISOString(),
