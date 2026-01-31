@@ -211,27 +211,65 @@ export default function TestimonialsTable({
         {/* Filters and Controls */}
         <div className="p-4 border-b border-border flex flex-col md:flex-row gap-4 justify-between items-center">
             <div className="flex items-center gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-                {showSelection && (
-                    <div className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-medium whitespace-nowrap border border-primary/20">
-                        {selectedIds.length} Selected
+                {showSelection && selectedIds.length > 0 && (
+                    <div className="flex items-center gap-2">
+                         <div className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-medium whitespace-nowrap border border-primary/20">
+                            {selectedIds.length} Selected
+                        </div>
+                        <button
+                            onClick={async () => {
+                                if(!confirm(`Approve ${selectedIds.length} testimonials?`)) return;
+                                try {
+                                    await fetch('/api/testimonials/batch', {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ ids: selectedIds, action: 'approve', value: true })
+                                    });
+                                    setTestimonials(prev => prev.map(t => selectedIds.includes(t._id) ? { ...t, isApproved: true } : t));
+                                    setSelectedIds([]);
+                                } catch(e) { console.error(e); alert('Error'); }
+                            }}
+                            className="bg-green-500/20 text-green-600 hover:bg-green-500/30 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                        >
+                            Approve
+                        </button>
+                        <button
+                             onClick={async () => {
+                                if(!confirm(`Archive ${selectedIds.length} testimonials?`)) return;
+                                try {
+                                    await fetch('/api/testimonials/batch', {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ ids: selectedIds, action: 'archive', value: true })
+                                    });
+                                    setTestimonials(prev => prev.map(t => selectedIds.includes(t._id) ? { ...t, isArchived: true } : t));
+                                    setSelectedIds([]);
+                                } catch(e) { console.error(e); alert('Error'); }
+                            }}
+                            className="bg-gray-500/20 text-gray-600 hover:bg-gray-500/30 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                        >
+                            Archive
+                        </button>
                     </div>
                 )}
-                <div className="flex gap-2">
-                {(['all', 'approved', 'pending', 'archived'] as const).map(status => (
-                    <button
-                        key={status}
-                        onClick={() => { setFilter(status); setCurrentPage(1); }}
-                        className={`px-3 py-1.5 rounded-lg text-sm capitalize transition-colors ${
-                            filter === status 
-                                ? 'bg-primary text-primary-foreground font-medium' 
-                                : 'text-muted-foreground hover:bg-white/5'
-                        }`}
-                    >
-                        {status}
-                    </button>
-                ))}
+                {!showSelection && (
+                    <div className="flex gap-2">
+                        {(['all', 'approved', 'pending', 'archived'] as const).map(status => (
+                            <button
+                                key={status}
+                                onClick={() => { setFilter(status); setCurrentPage(1); }}
+                                className={`px-3 py-1.5 rounded-lg text-sm capitalize transition-colors ${
+                                    filter === status 
+                                        ? 'bg-primary text-primary-foreground font-medium' 
+                                        : 'text-muted-foreground hover:bg-white/5'
+                                }`}
+                            >
+                                {status}
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div>
-        </div>
             
             <div className="flex gap-2 w-full md:w-auto items-center">
                  <div className="relative">

@@ -5,6 +5,7 @@ import connectDB from "@/lib/db";
 import Testimonial from "@/models/Testimonial";
 import Space from "@/models/Space";
 import redis from "@/lib/redis";
+import { pusherServer } from "@/lib/pusher";
 
 async function getTestimonialWithAuth(id: string) {
     const session = await getServerSession(authOptions);
@@ -45,7 +46,12 @@ export async function PATCH(req: Request, { params }: { params: any }) {
     await testimonial.save();
 
     // Invalidate Redis cache
-    await redis.del(`embed:${spaceId}`);
+    await redis.del(`embed_v2:${spaceId}`);
+
+    await pusherServer.trigger(`space-${spaceId}`, 'update', {
+        type: 'response-updated',
+        testimonialId: id
+    });
 
     return NextResponse.json({ testimonial });
 }
@@ -62,7 +68,12 @@ export async function DELETE(req: Request, { params }: { params: any }) {
     await Testimonial.findByIdAndDelete(id);
 
     // Invalidate Redis cache
-    await redis.del(`embed:${spaceId}`);
+    await redis.del(`embed_v2:${spaceId}`);
+
+    await pusherServer.trigger(`space-${spaceId}`, 'update', {
+        type: 'response-deleted',
+        testimonialId: id
+    });
 
     return NextResponse.json({ message: "Deleted" });
 }

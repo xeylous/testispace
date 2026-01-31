@@ -71,7 +71,11 @@ export async function GET(req: Request, { params }: { params: any }) {
                 cardStyle: space.cardStyle,
                 customStyles: space.customStyles
             },
-            testimonials: mappedTestimonials
+            testimonials: mappedTestimonials,
+            config: {
+                pusherKey: process.env.NEXT_PUBLIC_PUSHER_KEY,
+                pusherCluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER
+            }
         };
 
         // Cache for 5 minutes
