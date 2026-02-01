@@ -23,7 +23,12 @@ if (!cached) {
 
 async function connectDB() {
     if (cached.conn) {
-        return cached.conn;
+        if (cached.conn.connection.readyState === 1) {
+            return cached.conn;
+        }
+        console.log("Stale connection detected, reconnecting...");
+        cached.conn = null;
+        cached.promise = null;
     }
 
     if (!cached.promise) {
