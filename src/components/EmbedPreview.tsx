@@ -108,10 +108,18 @@ export default function EmbedPreview({ layout, cardStyle, customStyles }: EmbedP
 
   const cardStyles = getCardStyle();
 
+  // Common container style
+  const containerStyle = {
+    background: customStyles.containerBackground || `${customStyles.backgroundColor}10`,
+    fontFamily: customStyles.fontFamily 
+  };
+
+  const containerClassName = "p-6 rounded-lg transition-colors duration-300";
+
   // Special handling for animated layout
   if (layout === 'animated') {
     return (
-      <div className="min-h-[500px]">
+      <div className={`${containerClassName} min-h-[500px]`} style={containerStyle}>
         <AnimatedTestimonials 
           testimonials={mockTestimonials}
           customStyles={customStyles}
@@ -123,7 +131,7 @@ export default function EmbedPreview({ layout, cardStyle, customStyles }: EmbedP
   // Marquee layout
   if (layout === 'marquee') {
     return (
-      <div className="min-h-[400px]">
+      <div className={`${containerClassName} min-h-[400px]`} style={containerStyle}>
         <MarqueeTestimonials 
           testimonials={mockTestimonials}
           customStyles={customStyles}
@@ -135,7 +143,7 @@ export default function EmbedPreview({ layout, cardStyle, customStyles }: EmbedP
   // Card Stack layout
   if (layout === 'stack') {
     return (
-      <div className="min-h-[500px]">
+      <div className={`${containerClassName} min-h-[500px]`} style={containerStyle}>
         <CardStackTestimonials 
           testimonials={mockTestimonials}
           customStyles={customStyles}
@@ -145,10 +153,7 @@ export default function EmbedPreview({ layout, cardStyle, customStyles }: EmbedP
   }
 
   return (
-    <div className="p-6 rounded-lg transition-colors duration-300" style={{ 
-      background: customStyles.containerBackground || `${customStyles.backgroundColor}10`,
-      fontFamily: customStyles.fontFamily 
-    }}>
+    <div className={containerClassName} style={containerStyle}>
       <div className={getLayoutClass()}>
         {mockTestimonials.map((testimonial, index) => {
           const showImage = globalShowImages && (testimonial.displaySettings?.showImage !== false);
