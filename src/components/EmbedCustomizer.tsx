@@ -41,6 +41,23 @@ export default function EmbedCustomizer({
 
 
 
+  // Initial state for comparison
+  const initialCustomStyles = {
+    backgroundColor: currentCustomStyles.backgroundColor || '#1a1a1a',
+    textColor: currentCustomStyles.textColor || '#ffffff',
+    accentColor: currentCustomStyles.accentColor || '#8b5cf6',
+    starColor: currentCustomStyles.starColor || '#eab308',
+    fontFamily: currentCustomStyles.fontFamily || 'Inter',
+    borderRadius: currentCustomStyles.borderRadius || '12',
+    containerBackground: currentCustomStyles.containerBackground || 'transparent',
+    showImages: currentCustomStyles.showImages !== undefined ? currentCustomStyles.showImages : true
+  };
+
+  const hasChanges = 
+    selectedLayout !== currentLayout ||
+    selectedStyle !== currentStyle ||
+    JSON.stringify(customStyles) !== JSON.stringify(initialCustomStyles);
+
   const saveCustomization = async () => {
     setSaving(true);
     try {
@@ -74,6 +91,13 @@ export default function EmbedCustomizer({
 
   const handleStyleChange = (style: string) => {
     setSelectedStyle(style);
+  };
+
+  const handlePreview = (e: React.MouseEvent, type: 'layout' | 'style', id: string) => {
+    e.stopPropagation(); // Prevent card selection logic if necessary, though here we want both
+    if (type === 'layout') setSelectedLayout(id);
+    if (type === 'style') setSelectedStyle(id);
+    setShowPreview(true);
   };
 
   const tabs = [
@@ -150,8 +174,8 @@ export default function EmbedCustomizer({
           </button>
           <button
             onClick={saveCustomization}
-            disabled={saving}
-            className="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            disabled={saving || !hasChanges}
+            className="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
@@ -279,18 +303,18 @@ export default function EmbedCustomizer({
                     <button
                       key={layout.id}
                       onClick={() => handleLayoutChange(layout.id)}
-                      className={`relative overflow-hidden rounded-lg border-2 transition-all text-left hover:scale-105 ${
+                      className={`relative overflow-hidden rounded-lg border-2 transition-all text-left group/card ${
                         selectedLayout === layout.id
                           ? 'border-primary bg-primary/5 shadow-lg scale-105'
-                          : 'border-border hover:border-primary/50 hover:shadow-md'
+                          : 'border-border hover:border-primary/50 hover:shadow-md hover:scale-105'
                       }`}
                     >
-                      {/* Preview */}
+                      {/* Preview Content */}
                       <div className="p-2.5">
                         {getPreviewContent()}
                       </div>
                       
-                      {/* Content */}
+                      {/* Descriptions */}
                       <div className="px-3 pb-3">
                         <div className="font-semibold text-sm text-foreground mb-1 flex items-center justify-between">
                           {layout.name}
@@ -300,8 +324,21 @@ export default function EmbedCustomizer({
                             </div>
                           )}
                         </div>
-                        <div className="text-[11px] text-muted-foreground leading-tight line-clamp-2">
+                        <div className="text-[11px] text-muted-foreground leading-tight line-clamp-2 mb-2">
                           {layout.desc}
+                        </div>
+                        
+                        {/* Preview Button */}
+                        <div 
+                          onClick={(e) => handlePreview(e, 'layout', layout.id)}
+                          className={`w-full py-1.5 rounded text-xs font-medium flex items-center justify-center gap-1.5 transition-colors ${
+                            selectedLayout === layout.id
+                              ? 'bg-primary/10 text-primary hover:bg-primary/20'
+                              : 'bg-secondary text-secondary-foreground hover:bg-secondary/80 opacity-0 group-hover/card:opacity-100'
+                          }`}
+                        >
+                          <Eye size={12} />
+                          Preview
                         </div>
                       </div>
                     </button>
@@ -337,21 +374,34 @@ export default function EmbedCustomizer({
                       <button
                         key={style.id}
                         onClick={() => handleStyleChange(style.id)}
-                        className={`relative overflow-hidden p-6 rounded-xl transition-all h-32 flex flex-col justify-end items-start text-left group ${
+                        className={`relative overflow-hidden p-6 rounded-xl transition-all h-32 flex flex-col justify-end items-start text-left group/card ${
                           selectedStyle === style.id
                             ? 'ring-2 ring-primary ring-offset-2 ring-offset-background'
                             : 'hover:opacity-90'
                         }`}
                         style={previewStyle}
                       >
-                        <div className="font-bold text-sm mb-1">{style.name}</div>
-                        <div className="text-[10px] opacity-70 leading-tight">{style.preview}</div>
+                        <div className="font-bold text-sm mb-1 z-10">{style.name}</div>
+                        <div className="text-[10px] opacity-70 leading-tight mb-2 z-10">{style.preview}</div>
                         
                         {selectedStyle === style.id && (
-                          <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                          <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1 z-10">
                             <Check size={12} />
                           </div>
                         )}
+
+                        {/* Preview Button */}
+                        <div 
+                           onClick={(e) => handlePreview(e, 'style', style.id)}
+                           className={`relative z-10 mt-auto w-full py-1.5 rounded text-xs font-medium flex items-center justify-center gap-1.5 transition-all ${
+                             selectedStyle === style.id
+                               ? 'bg-background/20 backdrop-blur hover:bg-background/30'
+                               : 'bg-background/20 backdrop-blur hover:bg-background/30 opacity-0 group-hover/card:opacity-100'
+                           }`}
+                         >
+                           <Eye size={12} />
+                           Preview
+                         </div>
                       </button>
                     );
                   })}
