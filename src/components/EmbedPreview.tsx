@@ -198,7 +198,7 @@ export default function EmbedPreview({ layout, cardStyle, customStyles }: EmbedP
               </div>
               
               {showExperience && (
-                <p className="text-sm leading-relaxed" style={{ color: customStyles.textColor }}>
+                <p className="text-sm leading-relaxed break-words whitespace-pre-wrap" style={{ color: customStyles.textColor }}>
                   {testimonial.textContent}
                 </p>
               )}

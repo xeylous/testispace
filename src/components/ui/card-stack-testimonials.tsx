@@ -103,7 +103,7 @@ export function CardStackTestimonials({
                 <div>
                   {showExperience && (
                     <blockquote
-                      className="text-lg md:text-xl font-medium leading-relaxed mb-6"
+                      className="text-lg md:text-xl font-medium leading-relaxed mb-6 break-words whitespace-pre-wrap"
                       style={{ color: textColor }}
                     >
                       "{testimonial.quote || testimonial.textContent}"
