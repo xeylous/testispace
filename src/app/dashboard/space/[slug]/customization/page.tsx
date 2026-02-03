@@ -35,10 +35,7 @@ export default async function CustomizationPage({ params }: { params: any }) {
 
     return (
         <div className="space-y-8 mt-6">
-            <div>
-                <h2 className="text-xl font-bold mb-2">Testimonials Customization</h2>
-                <p className="text-muted-foreground">Customize how your testimonials will appear on your website.</p>
-            </div>
+
 
             <EmbedCustomizer 
                 spaceId={space._id} 

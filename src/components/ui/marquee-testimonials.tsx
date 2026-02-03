@@ -88,7 +88,7 @@ export function MarqueeTestimonials({
                   {/* Quote */}
                   {showExperience && (
                     <p
-                      className="text-sm leading-relaxed mb-6 flex-grow"
+                      className="text-sm leading-relaxed mb-6 flex-grow whitespace-normal break-words"
                       style={{ color: textColor }}
                     >
                       "{testimonial.quote || testimonial.textContent}"

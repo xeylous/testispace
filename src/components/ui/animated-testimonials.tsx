@@ -148,7 +148,7 @@ export function AnimatedTestimonials({
               {/* Quote */}
               {showExperience && (
                 <blockquote
-                  className={`${showImage ? "text-xl md:text-2xl" : "text-2xl md:text-3xl"} font-medium leading-relaxed mb-8`}
+                  className={`${showImage ? "text-xl md:text-2xl" : "text-2xl md:text-3xl"} font-medium leading-relaxed mb-8 break-words whitespace-pre-wrap`}
                   style={{ color: textColor }}
                 >
                   "{currentTestimonial.quote || currentTestimonial.textContent}"
