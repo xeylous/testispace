@@ -5,6 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -23,9 +24,18 @@ export const authOptions: NextAuthOptions = {
                 password: { label: "Password", type: "password" },
                 phone: { label: "Phone", type: "text" },
                 isPhoneLogin: { label: "Is Phone Login", type: "text" },
-                idToken: { label: "ID Token", type: "text" }
+                idToken: { label: "ID Token", type: "text" },
+                cfToken: { label: "Turnstile Token", type: "text" }
             },
-            async authorize(credentials: Record<"email" | "password" | "phone" | "isPhoneLogin" | "idToken", string> | undefined) {
+            async authorize(credentials: Record<"email" | "password" | "phone" | "isPhoneLogin" | "idToken" | "cfToken", string> | undefined) {
+                if (!credentials?.cfToken) {
+                    throw new Error("Missing CAPTCHA token");
+                }
+                const isCaptchaValid = await verifyTurnstileToken(credentials.cfToken);
+                if (!isCaptchaValid) {
+                    throw new Error("Invalid CAPTCHA");
+                }
+
                 // HANDLE PHONE LOGIN
                 if (credentials?.isPhoneLogin === "true") {
                     if (!credentials?.phone) throw new Error("Phone number required");

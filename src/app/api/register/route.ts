@@ -4,12 +4,22 @@ import User from "@/models/User";
 import bcrypt from "bcryptjs";
 import { sendOTP } from "@/lib/mail";
 import redis from "@/lib/redis";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 
 // ... (imports)
 
 export async function POST(req: Request) {
     try {
-        const { name, email, password, phone, isPhoneVerified } = await req.json();
+        const { name, email, password, phone, isPhoneVerified, cfToken } = await req.json();
+
+        if (!cfToken) {
+            return NextResponse.json({ message: "Missing Turnstile CAPTCHA token" }, { status: 400 });
+        }
+
+        const isCaptchaValid = await verifyTurnstileToken(cfToken);
+        if (!isCaptchaValid) {
+            return NextResponse.json({ message: "Invalid CAPTCHA" }, { status: 400 });
+        }
 
         if (!name || !email || !password) {
             return NextResponse.json({ message: "Missing required fields" }, { status: 400 });

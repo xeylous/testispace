@@ -7,6 +7,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { useRouter, useSearchParams } from "next/navigation";
+import TurnstileWidget from "@/components/TurnstileWidget";
 
 function LoginForm() {
   const [loginMethod, setLoginMethod] = useState<"email" | "phone">("email");
@@ -21,6 +22,8 @@ function LoginForm() {
   const [otp, setOtp] = useState("");
   const [confirmationResult, setConfirmationResult] = useState<any>(null);
   const [showOtpInput, setShowOtpInput] = useState(false);
+
+  const [cfToken, setCfToken] = useState("");
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -47,9 +50,16 @@ function LoginForm() {
     setLoading(true);
     setError("");
 
+    if (!cfToken) {
+        setError("Please complete the CAPTCHA");
+        setLoading(false);
+        return;
+    }
+
     const res = await signIn("credentials", {
       email,
       password,
+      cfToken, 
       redirect: false,
     });
 
@@ -125,7 +135,8 @@ function LoginForm() {
               phone: phone,
               idToken: idToken, 
               redirect: false,
-              isPhoneLogin: "true"
+              isPhoneLogin: "true",
+              cfToken
           });
 
           if (res?.error) {
@@ -220,10 +231,13 @@ function LoginForm() {
                   </button>
                 </div>
             </div>
+            <div className="flex justify-center mb-4">
+                 <TurnstileWidget onVerify={(token) => { setCfToken(token); setError(""); }} />
+            </div>
             <button
               type="submit"
-              disabled={loading}
-              className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 rounded-lg transition-colors shadow-[0_0_15px_rgba(139,92,246,0.5)] disabled:opacity-50"
+              disabled={loading || !cfToken}
+              className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 rounded-lg transition-colors shadow-[0_0_15px_rgba(139,92,246,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Signing in..." : "Sign In"}
             </button>
@@ -261,10 +275,13 @@ function LoginForm() {
                       className="w-full bg-input border border-border rounded-lg px-4 py-2 text-center tracking-widest text-2xl mb-4"
                       placeholder="123456"
                     />
+                    <div className="flex justify-center mb-4">
+                        <TurnstileWidget onVerify={(token) => { setCfToken(token); setError(""); }} />
+                    </div>
                     <button
                         onClick={handleVerifyOtp}
-                        disabled={loading}
-                        className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 rounded-lg transition-colors shadow-[0_0_15px_rgba(139,92,246,0.5)] disabled:opacity-50"
+                        disabled={loading || !cfToken}
+                        className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 rounded-lg transition-colors shadow-[0_0_15px_rgba(139,92,246,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? "Verifying..." : "Verify & Login"}
                     </button>
