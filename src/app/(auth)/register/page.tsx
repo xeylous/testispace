@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import TurnstileWidget from "@/components/TurnstileWidget";
 
 export default function RegisterPage() {
   const [step, setStep] = useState<"register" | "otp">("register");
@@ -25,6 +26,7 @@ export default function RegisterPage() {
 
   // Email OTP
   const [otp, setOtp] = useState("");
+  const [cfToken, setCfToken] = useState("");
   
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -106,6 +108,12 @@ export default function RegisterPage() {
     setLoading(true);
     setError("");
 
+    if (!cfToken) {
+        setError("Please complete the CAPTCHA");
+        setLoading(false);
+        return;
+    }
+
     try {
         const res = await fetch("/api/register", {
             method: "POST",
@@ -115,7 +123,8 @@ export default function RegisterPage() {
                 email, 
                 password,
                 phone,
-                isPhoneVerified: true
+                isPhoneVerified: true,
+                cfToken
             }),
         });
         if (res.ok) {
@@ -278,10 +287,14 @@ export default function RegisterPage() {
                  </div>
             )}
 
+            <div className="flex justify-center mt-4 mb-4">
+                 <TurnstileWidget onVerify={(token) => { setCfToken(token); setError(""); }} />
+            </div>
+
             <button
               type="submit"
-              disabled={loading}
-              className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 rounded-lg transition-colors shadow-[0_0_15px_rgba(139,92,246,0.5)] disabled:opacity-50"
+              disabled={loading || !cfToken}
+              className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-2 rounded-lg transition-colors shadow-[0_0_15px_rgba(139,92,246,0.5)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Creating..." : "Sign Up"}
             </button>
