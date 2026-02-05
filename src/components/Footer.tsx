@@ -9,8 +9,8 @@ export default function Footer() {
             <div>
                 <h4 className="font-semibold mb-4 text-foreground">Product</h4>
                 <ul className="space-y-2">
-                    <li><a href="#" className="hover:text-primary">Features</a></li>
-                    <li><a href="#" className="hover:text-primary">Pricing</a></li>
+                    <li><a href="/features" className="hover:text-primary">Features</a></li>
+                    <li><a href="/pricing" className="hover:text-primary">Pricing</a></li>
                 </ul>
             </div>
             <div>
