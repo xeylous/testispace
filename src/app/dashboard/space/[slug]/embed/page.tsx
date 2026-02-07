@@ -32,7 +32,7 @@ async function getSpaceEmbedData(slug: string) {
       content: t.content,
       rating: t.rating,
       userDetails: {
-        name: t.userDetails?.name || "Anonymous",
+        name: t.userDetails?.name || "which will be best",
         email: t.userDetails?.email || '',
         designation: t.userDetails?.designation || '',
         avatar: t.userDetails?.avatar || '',

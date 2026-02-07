@@ -301,7 +301,6 @@ export default function TestimonialsTable({
                 <th className="p-4 font-semibold">From</th>
                 {showSelection && <th className="p-4 font-semibold text-center">Select</th>}
                 <th className="p-4 font-semibold">Content Type</th>
-                <th className="p-4 font-semibold">Display</th>
                 <th className="p-4 font-semibold">Rating</th>
                 <th className="p-4 font-semibold">Status</th>
                 <th className="p-4 font-semibold">Actions</th>
@@ -325,7 +324,7 @@ export default function TestimonialsTable({
                         {t.userDetails?.name?.charAt(0).toUpperCase() || "A"}
                         </div>
                         <div>
-                        <p className="font-medium">{t.userDetails?.name || "Anonymous"}</p>
+                        <p className="font-medium">{t.userDetails?.name || "which will be best"}</p>
                         {t.userDetails?.designation && (
                             <p className="text-xs text-muted-foreground">{t.userDetails.designation}</p>
                         )}
@@ -350,63 +349,14 @@ export default function TestimonialsTable({
                         {getTypeIcon(t)}
                         {t.mediaType !== 'none' ? t.mediaType : 'Text Only'} 
                         </div>
-                        {t.mediaType !== 'none' && t.mediaUrl && (
-                            <div className="relative w-16 h-12 rounded-md overflow-hidden bg-black/20 border border-border mt-1">
-                                {t.mediaType === 'video' ? (
-                                    <video src={t.mediaUrl} className="w-full h-full object-cover" />
-                                ) : (
-                                    <img src={t.mediaUrl} alt="Thumbnail" className="w-full h-full object-cover" />
-                                )}
-                            </div>
-                        )}
                         {t.textContent ? (
-                            <p className="text-xs text-muted-foreground line-clamp-2 italic">
-                                {t.textContent}
+                            <p className="text-xs text-muted-foreground italic">
+                                {t.textContent.length > 100 ? `${t.textContent.substring(0, 100)}...` : t.textContent}
                             </p>
                         ) : (
                             <p className="text-xs text-muted-foreground italic">No text content</p>
                         )}
                     </div>
-                    </td>
-                    <td className="p-4" onClick={e => e.stopPropagation()}>
-                        <div className="flex flex-wrap gap-2 justify-center max-w-[120px]">
-                            <div className="flex flex-col items-center gap-1" title="Show Experience">
-                                <span className="text-[9px] text-muted-foreground font-bold uppercase">Exp</span>
-                                <input 
-                                    type="checkbox" 
-                                    checked={t.displaySettings?.showExperience !== false}
-                                    onChange={(e) => handleUpdateDisplaySettings(t._id, 'showExperience', e.target.checked)}
-                                    className="w-3.5 h-3.5 rounded border-gray-300 text-primary cursor-pointer accent-primary"
-                                />
-                            </div>
-                            <div className="flex flex-col items-center gap-1" title="Show Image">
-                                <span className="text-[9px] text-muted-foreground font-bold uppercase">Img</span>
-                                <input 
-                                    type="checkbox" 
-                                    checked={t.displaySettings?.showImage !== false}
-                                    onChange={(e) => handleUpdateDisplaySettings(t._id, 'showImage', e.target.checked)}
-                                    className="w-3.5 h-3.5 rounded border-gray-300 text-primary cursor-pointer accent-primary"
-                                />
-                            </div>
-                            <div className="flex flex-col items-center gap-1" title="Show Name">
-                                <span className="text-[9px] text-muted-foreground font-bold uppercase">Name</span>
-                                <input 
-                                    type="checkbox" 
-                                    checked={t.displaySettings?.showName !== false}
-                                    onChange={(e) => handleUpdateDisplaySettings(t._id, 'showName', e.target.checked)}
-                                    className="w-3.5 h-3.5 rounded border-gray-300 text-primary cursor-pointer accent-primary"
-                                />
-                            </div>
-                            <div className="flex flex-col items-center gap-1" title="Show Designation">
-                                <span className="text-[9px] text-muted-foreground font-bold uppercase">Dest</span>
-                                <input 
-                                    type="checkbox" 
-                                    checked={t.displaySettings?.showDesignation !== false}
-                                    onChange={(e) => handleUpdateDisplaySettings(t._id, 'showDesignation', e.target.checked)}
-                                    className="w-3.5 h-3.5 rounded border-gray-300 text-primary cursor-pointer accent-primary"
-                                />
-                            </div>
-                        </div>
                     </td>
                     <td className="p-4">
                     <div className="flex items-center gap-1 text-yellow-500">
@@ -487,7 +437,7 @@ export default function TestimonialsTable({
                 {/* Expanded Content Row */}
                 {expandedId === t._id && (
                     <tr className="bg-muted/30">
-                    <td colSpan={showSelection ? (showEmbedCode ? 8 : 7) : (showEmbedCode ? 7 : 6)} className="p-4">
+                    <td colSpan={showSelection ? (showEmbedCode ? 7 : 6) : (showEmbedCode ? 6 : 5)} className="p-4">
                         <div className="space-y-6 max-w-5xl mx-auto">
                         <div className="flex flex-col gap-6">
                             {/* Always show media if it exists */}

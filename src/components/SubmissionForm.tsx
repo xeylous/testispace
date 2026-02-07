@@ -236,14 +236,25 @@ export default function SubmissionForm({ spaceId }: { spaceId: string }) {
             </div>
         </div>
         <div>
-            <label className="block text-sm font-medium mb-2">Job Title / Designation (Optional)</label>
-            <input
-            type="text"
+            <label className="block text-sm font-medium mb-2">Job Title / Designation</label>
+            <select
             value={designation}
             onChange={(e) => setDesignation(e.target.value)}
             className="w-full bg-input border border-border rounded-lg px-4 py-2 focus:ring-2 focus:ring-ring outline-none transition-all text-foreground"
-            placeholder="e.g. CEO at Company"
-            />
+            required
+            >
+                <option value="" disabled>Select Role</option>
+                <option value="Customer">Customer</option>
+                <option value="CEO">CEO</option>
+                <option value="CTO">CTO</option>
+                <option value="Manager">Manager</option>
+                <option value="Developer">Developer</option>
+                <option value="Designer">Designer</option>
+                <option value="Product Manager">Product Manager</option>
+                <option value="Founder">Founder</option>
+                <option value="Co-Founder">Co-Founder</option>
+                <option value="Other">Other</option>
+            </select>
         </div>
       </div>
 
