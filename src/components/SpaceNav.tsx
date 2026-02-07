@@ -29,9 +29,9 @@ export default function SpaceNav({ slug }: { slug: string }) {
       icon: <Heart size={18} />,
     },
     {
-      name: "Analytics",
-      href: `/dashboard/space/${slug}/analytics`,
-      icon: <BarChart3 size={18} />,
+      name: "Customization",
+      href: `/dashboard/space/${slug}/customization`,
+      icon: <Palette size={18} />,
     },
     {
       name: "Integration",
@@ -39,9 +39,9 @@ export default function SpaceNav({ slug }: { slug: string }) {
       icon: <Code size={18} />,
     },
     {
-      name: "Customization",
-      href: `/dashboard/space/${slug}/customization`,
-      icon: <Palette size={18} />,
+      name: "Analytics",
+      href: `/dashboard/space/${slug}/analytics`,
+      icon: <BarChart3 size={18} />,
     },
     {
       name: "Settings",
