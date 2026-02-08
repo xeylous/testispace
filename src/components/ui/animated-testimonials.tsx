@@ -10,6 +10,8 @@ interface Testimonial {
   designation: string;
   src?: string;
   avatar?: string;
+  mediaUrl?: string;
+  mediaType?: 'image' | 'video' | 'none';
   rating: number;
   displaySettings?: {
     showExperience: boolean;
@@ -29,6 +31,7 @@ interface AnimatedTestimonialsProps {
     fontFamily?: string;
     borderRadius?: string;
     showImages?: boolean;
+    showContentMedia?: boolean;
   };
   autoplayInterval?: number;
 }
@@ -49,6 +52,7 @@ export function AnimatedTestimonials({
     fontFamily = "Inter",
     borderRadius = "12",
     showImages: globalShowImages = true,
+    showContentMedia = true,
   } = customStyles;
 
   useEffect(() => {
@@ -78,7 +82,13 @@ export function AnimatedTestimonials({
   const currentTestimonial = testimonials[currentIndex];
   
   // Per-testimonial display settings
-  const showImage = globalShowImages && (currentTestimonial.displaySettings?.showImage !== false);
+  const showUserImage = globalShowImages && (currentTestimonial.displaySettings?.showImage !== false);
+  const showContentImage = showContentMedia && currentTestimonial.mediaUrl && currentTestimonial.mediaType !== 'none';
+  
+  // Decide what to show in the image slot. Prioritize content media if available and enabled.
+  const shouldShowImageSlot = showUserImage || showContentImage;
+  const imageSrc = (showContentImage ? currentTestimonial.mediaUrl : (currentTestimonial.src || currentTestimonial.avatar)) || "";
+
   const showName = currentTestimonial.displaySettings?.showName !== false;
   const showDesignation = currentTestimonial.displaySettings?.showDesignation !== false;
   const showExperience = currentTestimonial.displaySettings?.showExperience !== false;
@@ -99,9 +109,9 @@ export function AnimatedTestimonials({
           }}
         >
           {/* Content */}
-          <div className={`grid ${showImage ? "md:grid-cols-2" : "grid-cols-1"} gap-8 p-8 md:p-12`}>
+          <div className={`grid ${shouldShowImageSlot ? "md:grid-cols-2" : "grid-cols-1"} gap-8 p-8 md:p-12`}>
             {/* Image Section */}
-            {showImage && (
+            {shouldShowImageSlot && (
               <div className="flex items-center justify-center">
                 <div
                   className={`relative transition-all duration-500 ${
@@ -114,12 +124,21 @@ export function AnimatedTestimonials({
                       background: `linear-gradient(135deg, ${accentColor}, ${backgroundColor})`,
                     }}
                   />
-                  <img
-                    src={currentTestimonial.src || currentTestimonial.avatar}
-                    alt={currentTestimonial.name}
-                    className="relative w-64 h-64 object-cover rounded-2xl shadow-2xl"
-                    style={{ borderRadius: `${borderRadius}px` }}
-                  />
+                  {showContentImage && currentTestimonial.mediaType === 'video' ? (
+                     <video
+                        src={imageSrc}
+                        controls
+                        className="relative w-64 h-64 object-cover rounded-2xl shadow-2xl"
+                        style={{ borderRadius: `${borderRadius}px` }}
+                     />
+                  ) : (
+                      <img
+                        src={imageSrc}
+                        alt={currentTestimonial.name}
+                        className="relative w-64 h-64 object-cover rounded-2xl shadow-2xl"
+                        style={{ borderRadius: `${borderRadius}px` }}
+                      />
+                  )}
                 </div>
               </div>
             )}
@@ -130,7 +149,7 @@ export function AnimatedTestimonials({
                 isAnimating
                   ? "opacity-0 translate-x-8"
                   : "opacity-100 translate-x-0"
-              } ${!showImage && "text-center items-center max-w-2xl mx-auto"}`}
+              } ${!shouldShowImageSlot && "text-center items-center max-w-2xl mx-auto"}`}
             >
               {/* Rating */}
               <div className="flex gap-1 mb-6">
@@ -148,7 +167,7 @@ export function AnimatedTestimonials({
               {/* Quote */}
               {showExperience && (
                 <blockquote
-                  className={`${showImage ? "text-xl md:text-2xl" : "text-2xl md:text-3xl"} font-medium leading-relaxed mb-8 break-words whitespace-pre-wrap`}
+                  className={`${shouldShowImageSlot ? "text-xl md:text-2xl" : "text-2xl md:text-3xl"} font-medium leading-relaxed mb-8 break-words whitespace-pre-wrap`}
                   style={{ color: textColor }}
                 >
                   "{currentTestimonial.quote || currentTestimonial.textContent}"
@@ -156,7 +175,7 @@ export function AnimatedTestimonials({
               )}
 
               {/* Author */}
-              <div className={!showImage ? "text-center" : ""}>
+              <div className={!shouldShowImageSlot ? "text-center" : ""}>
                 {showName && (
                   <div
                     className="text-lg font-bold mb-1"

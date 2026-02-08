@@ -38,6 +38,10 @@ interface TestimonialsTableProps {
   showEmbedCode?: boolean;
 }
 
+import ConfirmationModal from "./ui/ConfirmationModal";
+
+// ... existing imports
+
 export default function TestimonialsTable({ 
   testimonials: initialTestimonials, 
   baseUrl, 
@@ -53,6 +57,18 @@ export default function TestimonialsTable({
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   
+  // Modal State
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    title: "",
+    message: "",
+    confirmText: "Confirm",
+    cancelText: "Cancel",
+    type: 'info' as 'info' | 'danger' | 'success' | 'warning',
+    onConfirm: () => {},
+  });
+
+
   // Filtering and Pagination State
   const [filter, setFilter] = useState<'all' | 'approved' | 'pending' | 'archived'>('all');
   const [search, setSearch] = useState('');
@@ -115,38 +131,100 @@ export default function TestimonialsTable({
   };
 
   const handleAction = async (id: string, action: 'approve' | 'archive' | 'delete') => {
-    setActionLoading(id);
-    try {
-      if (action === 'delete') {
-        if (!confirm("Are you sure you want to delete this testimonial?")) return;
-        const res = await fetch(`/api/testimonials/${id}`, { method: 'DELETE' });
-        if (res.ok) {
-          setTestimonials(prev => prev.filter(t => t._id !== id));
-        }
-      } else {
-        const body = action === 'approve' 
-          ? { isApproved: !testimonials.find(t => t._id === id)?.isApproved }
-          : { isArchived: !testimonials.find(t => t._id === id)?.isArchived };
+    
+    // Define the actual action function to run after confirmation
+    const executeAction = async () => {
+        setModalOpen(false);
+        setActionLoading(id);
+        try {
+            if (action === 'delete') {
+                const res = await fetch(`/api/testimonials/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    setTestimonials(prev => prev.filter(t => t._id !== id));
+                }
+            } else {
+                const body = action === 'approve' 
+                    ? { isApproved: !testimonials.find(t => t._id === id)?.isApproved }
+                    : { isArchived: !testimonials.find(t => t._id === id)?.isArchived };
 
-        const res = await fetch(`/api/testimonials/${id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
+                const res = await fetch(`/api/testimonials/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+
+                if (res.ok) {
+                    const { testimonial: updated } = await res.json();
+                    setTestimonials(prev => prev.map(t => t._id === id ? { ...t, isApproved: updated.isApproved, isArchived: updated.isArchived } : t));
+                }
+            }
+        } catch (err) {
+            console.error("Action failed:", err);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    // Determine modal content based on action
+    const testimonial = testimonials.find(t => t._id === id);
+    if (!testimonial) return;
+
+    if (action === 'delete') {
+        setModalConfig({
+            title: "Delete Testimonial?",
+            message: "Are you sure you want to permanently delete this testimonial? This action cannot be undone.",
+            confirmText: "Delete",
+            cancelText: "Cancel",
+            type: 'danger',
+            onConfirm: executeAction
         });
-
-        if (res.ok) {
-          const { testimonial: updated } = await res.json();
-          setTestimonials(prev => prev.map(t => t._id === id ? { ...t, isApproved: updated.isApproved, isArchived: updated.isArchived } : t));
-        }
-      }
-    } catch (err) {
-      console.error("Action failed:", err);
-    } finally {
-      setActionLoading(null);
+        setModalOpen(true);
+    } else if (action === 'approve') {
+        const isApproving = !testimonial.isApproved;
+        setModalConfig({
+            title: isApproving ? "Approve Testimonial?" : "Unapprove Testimonial?",
+            message: isApproving 
+                ? "This will make the testimonial visible publicly and eligible for embedding." 
+                : "This will hide the testimonial from public view.",
+            confirmText: isApproving ? "Approve" : "Unapprove",
+            cancelText: "Cancel",
+            type: isApproving ? 'success' : 'warning',
+            onConfirm: executeAction
+        });
+        setModalOpen(true);
+    } else if (action === 'archive') {
+         const isArchiving = !testimonial.isArchived;
+         setModalConfig({
+            title: isArchiving ? "Archive Testimonial?" : "Unarchive Testimonial?",
+            message: isArchiving 
+                ? "Archived testimonials are hidden but not deleted." 
+                : "This testimonial will be restored to your main list.",
+            confirmText: isArchiving ? "Archive" : "Unarchive",
+            cancelText: "Cancel",
+            type: 'warning',
+            onConfirm: executeAction
+        });
+        setModalOpen(true);
     }
   };
 
   const handleToggleSelect = async (id: string) => {
+    // Check if testimonial is approved before selecting
+    const testimonial = testimonials.find(t => t._id === id);
+    if (testimonial && !testimonial.isApproved) {
+        // Use custom modal instead of alert
+        setModalConfig({
+            title: "Approval Required",
+            message: "This testimonial is currently pending. You must approve it before you can select it for embedding.",
+            confirmText: "Okay",
+            cancelText: "", // Hide cancel button for info alert
+            type: 'info',
+            onConfirm: () => setModalOpen(false)
+        });
+        setModalOpen(true);
+        return;
+    }
+
     const isSelected = selectedIds.includes(id);
     const newSelected = isSelected 
       ? selectedIds.filter(sid => sid !== id)
@@ -217,34 +295,54 @@ export default function TestimonialsTable({
                             {selectedIds.length} Selected
                         </div>
                         <button
-                            onClick={async () => {
-                                if(!confirm(`Approve ${selectedIds.length} testimonials?`)) return;
-                                try {
-                                    await fetch('/api/testimonials/batch', {
-                                        method: 'PUT',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ ids: selectedIds, action: 'approve', value: true })
-                                    });
-                                    setTestimonials(prev => prev.map(t => selectedIds.includes(t._id) ? { ...t, isApproved: true } : t));
-                                    setSelectedIds([]);
-                                } catch(e) { console.error(e); alert('Error'); }
+                            onClick={() => {
+                                setModalConfig({
+                                    title: `Approve ${selectedIds.length} Testimonials?`,
+                                    message: "Are you sure you want to approve all selected testimonials?",
+                                    confirmText: "Approve All",
+                                    cancelText: "Cancel",
+                                    type: 'success',
+                                    onConfirm: async () => {
+                                        setModalOpen(false);
+                                        try {
+                                            await fetch('/api/testimonials/batch', {
+                                                method: 'PUT',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({ ids: selectedIds, action: 'approve', value: true })
+                                            });
+                                            setTestimonials(prev => prev.map(t => selectedIds.includes(t._id) ? { ...t, isApproved: true } : t));
+                                            setSelectedIds([]);
+                                        } catch(e) { console.error(e); alert('Error'); }
+                                    }
+                                });
+                                setModalOpen(true);
                             }}
                             className="bg-green-500/20 text-green-600 hover:bg-green-500/30 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
                         >
                             Approve
                         </button>
                         <button
-                             onClick={async () => {
-                                if(!confirm(`Archive ${selectedIds.length} testimonials?`)) return;
-                                try {
-                                    await fetch('/api/testimonials/batch', {
-                                        method: 'PUT',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ ids: selectedIds, action: 'archive', value: true })
-                                    });
-                                    setTestimonials(prev => prev.map(t => selectedIds.includes(t._id) ? { ...t, isArchived: true } : t));
-                                    setSelectedIds([]);
-                                } catch(e) { console.error(e); alert('Error'); }
+                             onClick={() => {
+                                setModalConfig({
+                                    title: `Archive ${selectedIds.length} Testimonials?`,
+                                    message: "Are you sure you want to archive all selected testimonials?",
+                                    confirmText: "Archive All",
+                                    cancelText: "Cancel",
+                                    type: 'warning',
+                                    onConfirm: async () => {
+                                        setModalOpen(false);
+                                        try {
+                                            await fetch('/api/testimonials/batch', {
+                                                method: 'PUT',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({ ids: selectedIds, action: 'archive', value: true })
+                                            });
+                                            setTestimonials(prev => prev.map(t => selectedIds.includes(t._id) ? { ...t, isArchived: true } : t));
+                                            setSelectedIds([]);
+                                        } catch(e) { console.error(e); alert('Error'); }
+                                    }
+                                });
+                                setModalOpen(true);
                             }}
                             className="bg-gray-500/20 text-gray-600 hover:bg-gray-500/30 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
                         >
@@ -512,6 +610,18 @@ export default function TestimonialsTable({
                 </div>
             </div>
         )}
+        
+        {/* Helper Modal Component */}
+        <ConfirmationModal
+            isOpen={modalOpen}
+            onClose={() => setModalOpen(false)}
+            onConfirm={modalConfig.onConfirm}
+            title={modalConfig.title}
+            message={modalConfig.message}
+            confirmText={modalConfig.confirmText}
+            cancelText={modalConfig.cancelText}
+            type={modalConfig.type}
+        />
     </div>
   );
 }

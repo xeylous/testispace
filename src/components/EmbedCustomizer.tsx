@@ -34,7 +34,8 @@ export default function EmbedCustomizer({
     fontFamily: currentCustomStyles.fontFamily || 'Inter',
     borderRadius: currentCustomStyles.borderRadius || '12',
     containerBackground: currentCustomStyles.containerBackground || 'transparent',
-    showImages: currentCustomStyles.showImages !== undefined ? currentCustomStyles.showImages : true
+    showImages: currentCustomStyles.showImages !== undefined ? currentCustomStyles.showImages : true,
+    showContentMedia: currentCustomStyles.showContentMedia !== undefined ? currentCustomStyles.showContentMedia : true
   });
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(true);
@@ -50,7 +51,8 @@ export default function EmbedCustomizer({
     fontFamily: currentCustomStyles.fontFamily || 'Inter',
     borderRadius: currentCustomStyles.borderRadius || '12',
     containerBackground: currentCustomStyles.containerBackground || 'transparent',
-    showImages: currentCustomStyles.showImages !== undefined ? currentCustomStyles.showImages : true
+    showImages: currentCustomStyles.showImages !== undefined ? currentCustomStyles.showImages : true,
+    showContentMedia: currentCustomStyles.showContentMedia !== undefined ? currentCustomStyles.showContentMedia : true
   };
 
   const hasChanges = 
@@ -679,6 +681,25 @@ export default function EmbedCustomizer({
                     />
                   </button>
                 </div>
+
+                <div className="flex items-center justify-between p-4 bg-background/50 rounded-lg border border-border mt-3">
+                  <div>
+                    <label className="font-semibold block text-sm">Show Content Media</label>
+                    <p className="text-[11px] text-muted-foreground">Toggle to show or hide attached images/videos</p>
+                  </div>
+                  <button
+                    onClick={() => setCustomStyles({...customStyles, showContentMedia: !customStyles.showContentMedia})}
+                    className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors focus:outline-none ${
+                      customStyles.showContentMedia ? 'bg-primary' : 'bg-gray-600'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                        customStyles.showContentMedia ? 'translate-x-5.5' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
               </div>
               
               <div className="flex gap-3 pt-4 border-t border-border">
@@ -691,8 +712,10 @@ export default function EmbedCustomizer({
                     fontFamily: 'Inter',
                     borderRadius: '12',
                     containerBackground: 'transparent',
-                    showImages: true
+                    showImages: true,
+                    showContentMedia: true
                   })}
+
                   className="px-6 py-3 rounded-lg border border-border hover:bg-secondary/30 transition-colors text-sm font-medium w-full md:w-auto"
                 >
                   Reset to Default
