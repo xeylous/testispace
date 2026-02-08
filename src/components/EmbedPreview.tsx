@@ -28,7 +28,7 @@ const mockTestimonials = [
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
     rating: 5,
     textContent: "This product has completely transformed how our team collaborates. Highly recommend!",
-    mediaType: "image",
+    mediaType: "image" as const,
     mediaUrl: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1000&auto=format&fit=crop",
     displaySettings: { showExperience: true, showImage: true, showName: true, showDesignation: true }
   },
@@ -38,7 +38,7 @@ const mockTestimonials = [
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Michael",
     rating: 5,
     textContent: "Amazing experience! The interface is intuitive and the features are exactly what we needed.",
-    mediaType: "none",
+    mediaType: "none" as const,
     displaySettings: { showExperience: true, showImage: true, showName: true, showDesignation: true }
   },
   {
@@ -47,7 +47,7 @@ const mockTestimonials = [
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emily",
     rating: 4,
     textContent: "Great tool for managing testimonials. The customization options are fantastic!",
-    mediaType: "image",
+    mediaType: "image" as const,
     mediaUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1000&auto=format&fit=crop",
     displaySettings: { showExperience: true, showImage: true, showName: true, showDesignation: true }
   }
