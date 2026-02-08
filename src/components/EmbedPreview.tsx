@@ -17,6 +17,7 @@ interface EmbedPreviewProps {
     borderRadius: string;
     containerBackground?: string;
     showImages?: boolean;
+    showContentMedia?: boolean;
   };
 }
 
@@ -27,6 +28,8 @@ const mockTestimonials = [
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
     rating: 5,
     textContent: "This product has completely transformed how our team collaborates. Highly recommend!",
+    mediaType: "image" as const,
+    mediaUrl: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1000&auto=format&fit=crop",
     displaySettings: { showExperience: true, showImage: true, showName: true, showDesignation: true }
   },
   {
@@ -35,6 +38,7 @@ const mockTestimonials = [
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Michael",
     rating: 5,
     textContent: "Amazing experience! The interface is intuitive and the features are exactly what we needed.",
+    mediaType: "none" as const,
     displaySettings: { showExperience: true, showImage: true, showName: true, showDesignation: true }
   },
   {
@@ -43,6 +47,8 @@ const mockTestimonials = [
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emily",
     rating: 4,
     textContent: "Great tool for managing testimonials. The customization options are fantastic!",
+    mediaType: "image" as const,
+    mediaUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1000&auto=format&fit=crop",
     displaySettings: { showExperience: true, showImage: true, showName: true, showDesignation: true }
   }
 ];
@@ -155,19 +161,24 @@ export default function EmbedPreview({ layout, cardStyle, customStyles }: EmbedP
   return (
     <div className={containerClassName} style={containerStyle}>
       <div className={getLayoutClass()}>
-        {mockTestimonials.map((testimonial, index) => {
+        {mockTestimonials.map((testimonial: any, index) => {
           const showImage = globalShowImages && (testimonial.displaySettings?.showImage !== false);
           const showName = (testimonial.displaySettings?.showName !== false);
           const showDesignation = (testimonial.displaySettings?.showDesignation !== false);
           const showExperience = (testimonial.displaySettings?.showExperience !== false);
+          const showContentMedia = customStyles.showContentMedia !== false && testimonial.mediaType !== 'none' && testimonial.mediaUrl;
 
           return (
             <div
               key={index}
-              className={`p-6 transition-all ${layout === 'carousel' ? 'min-w-[300px] snap-center' : ''}`}
-              style={cardStyles}
+              className={`p-6 transition-all flex flex-col h-full ${layout === 'carousel' ? 'min-w-[300px] snap-center' : ''}`}
+              style={{
+                ...cardStyles,
+                // Ensure equal height for grid items if not masonry
+                height: layout !== 'masonry' ? '100%' : 'auto'
+              }}
             >
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-4 flex-shrink-0">
                 {showImage && (
                   <img
                     src={testimonial.avatar}
@@ -191,17 +202,39 @@ export default function EmbedPreview({ layout, cardStyle, customStyles }: EmbedP
                 )}
               </div>
               
-              <div className="flex gap-1 mb-3">
+              <div className="flex gap-1 mb-3 flex-shrink-0">
                 {[...Array(testimonial.rating)].map((_, i) => (
                   <Star key={i} size={16} fill={customStyles.starColor} color={customStyles.starColor} />
                 ))}
               </div>
               
-              {showExperience && (
-                <p className="text-sm leading-relaxed break-words whitespace-pre-wrap" style={{ color: customStyles.textColor }}>
-                  {testimonial.textContent}
-                </p>
-              )}
+              <div className="flex-grow flex flex-col gap-4">
+                  {showExperience && (
+                    <p className="text-sm leading-relaxed break-words whitespace-pre-wrap" style={{ color: customStyles.textColor }}>
+                      {testimonial.textContent}
+                    </p>
+                  )}
+
+                  {showContentMedia && (
+                    <div className="mt-auto pt-4 w-full">
+                        {testimonial.mediaType === 'video' ? (
+                            <video 
+                                src={testimonial.mediaUrl} 
+                                controls 
+                                className="w-full h-48 object-cover rounded-lg"
+                                style={{ borderRadius: `${parseInt(customStyles.borderRadius) - 4}px` }}
+                            />
+                        ) : (
+                            <img 
+                                src={testimonial.mediaUrl} 
+                                alt="Testimonial attachment" 
+                                className="w-full h-48 object-cover rounded-lg"
+                                style={{ borderRadius: `${parseInt(customStyles.borderRadius) - 4}px` }}
+                            />
+                        )}
+                    </div>
+                  )}
+              </div>
             </div>
           );
         })}
