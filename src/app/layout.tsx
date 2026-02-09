@@ -60,8 +60,56 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://testispace.com/#organization",
+        "name": "TestiSpace",
+        "url": "https://testispace.com",
+        "logo": "https://testispace.com/icon.png",
+        "sameAs": [
+          "https://github.com/xeylous/testispace"
+        ]
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "TestiSpace",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "description": "The all-in-one platform to collect, manage, and embed video & text testimonials.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "5",
+          "ratingCount": "1"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://testispace.com/#website",
+        "url": "https://testispace.com",
+        "name": "TestiSpace",
+        "publisher": {
+          "@id": "https://testispace.com/#organization"
+        }
+      }
+    ]
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
