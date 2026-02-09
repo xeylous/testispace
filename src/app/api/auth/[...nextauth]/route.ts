@@ -47,7 +47,14 @@ export const authOptions: NextAuthOptions = {
                         throw new Error("No account found with this phone number. Please sign up.");
                     }
 
-                    return { id: user._id.toString(), name: user.name, email: user.email, image: user.image };
+                    return {
+                        id: user._id.toString(),
+                        name: user.name,
+                        email: user.email,
+                        image: user.image,
+                        role: user.role || 'user',
+                        plan: user.plan || 'free'
+                    };
                 }
 
                 // HANDLE EMAIL LOGIN
@@ -69,7 +76,14 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Invalid credentials");
                 }
 
-                return { id: user._id.toString(), name: user.name, email: user.email, image: user.image };
+                return {
+                    id: user._id.toString(),
+                    name: user.name,
+                    email: user.email,
+                    image: user.image,
+                    role: user.role || 'user',
+                    plan: user.plan || 'free'
+                };
             },
         }),
     ],
@@ -90,6 +104,8 @@ export const authOptions: NextAuthOptions = {
                     }
                     // Store MongoDB _id on the user object for the jwt callback
                     user.id = existingUser._id.toString();
+                    user.role = existingUser.role;
+                    user.plan = existingUser.plan;
                     return true;
                 } catch (error) {
                     console.error("Error checking if user exists: ", error);
@@ -102,14 +118,48 @@ export const authOptions: NextAuthOptions = {
             if (session?.user) {
                 // @ts-ignore
                 session.user.id = token.sub;
+                session.user.role = token.role;
+                session.user.plan = token.plan;
             }
             return session;
         },
-        async jwt({ token, user }) {
+        async jwt({ token, user, account }) {
+            // Initial sign in
             if (user) {
-                token.sub = user.id;
+                // For OAuth, we need to ensure we have the latest role from DB
+                // because the 'user' object might be the raw provider profile
+                if (account?.provider === "google" || account?.provider === "github") {
+                    await connectDB();
+                    const dbUser = await User.findOne({ email: user.email });
+                    if (dbUser) {
+                        token.sub = dbUser._id.toString();
+                        token.role = dbUser.role;
+                        token.plan = dbUser.plan;
+                    }
+                } else {
+                    // For credentials, 'user' is what we returned from authorize()
+                    token.sub = user.id;
+                    token.role = user.role;
+                    token.plan = user.plan;
+                }
+
+                // Log Login (only on initial sign in)
+                if (user) {
+                    // Fire and forget logging to avoid slowing down auth
+                    const logAction = account?.provider === 'credentials' ? 'LOGIN_CREDENTIALS' : `LOGIN_${account?.provider?.toUpperCase()}`;
+                    import("@/lib/logger").then(({ logActivity }) => {
+                        logActivity(logAction, user.id, { email: user.email });
+                    });
+                }
             }
             return token;
+        },
+        async redirect({ url, baseUrl }) {
+            // Allows relative callback URLs
+            if (url.startsWith("/")) return `${baseUrl}${url}`
+            // Allows callback URLs on the same origin
+            else if (new URL(url).origin === baseUrl) return url
+            return baseUrl
         }
     },
     pages: {
