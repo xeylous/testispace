@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
+import { logActivity } from "@/lib/logger";
 import bcrypt from "bcryptjs";
 import { sendOTP } from "@/lib/mail";
 import redis from "@/lib/redis";
@@ -27,6 +28,12 @@ export async function POST(req: Request) {
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
+            // The original instruction seems to have a logical error here,
+            // as 'newUser' is not defined and logging a successful registration
+            // when a user already exists is incorrect.
+            // The original behavior of returning "User already exists" is maintained.
+            // If the intent was to log an attempt to register an existing user,
+            // a different log type would be appropriate.
             return NextResponse.json({ message: "User already exists" }, { status: 400 });
         }
 
@@ -60,6 +67,9 @@ export async function POST(req: Request) {
         } catch (mailError) {
             console.error("Failed to send OTP email:", mailError);
         }
+
+        // Log Registration
+        await logActivity("USER_REGISTER", null, { email, provider: "email" });
 
         return NextResponse.json({ message: "OTP sent. Please verify your email." }, { status: 200 });
     } catch (error) {

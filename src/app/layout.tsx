@@ -120,7 +120,7 @@ export default function RootLayout({
             <div id="global-navbar">
               <Navbar />
             </div>
-            <main className="min-h-screen">
+            <main className="min-h-screen pt-16">
                 {children}
             </main>
             <div id="global-footer">
