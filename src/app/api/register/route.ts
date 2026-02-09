@@ -6,8 +6,6 @@ import { sendOTP } from "@/lib/mail";
 import redis from "@/lib/redis";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 
-// ... (imports)
-
 export async function POST(req: Request) {
     try {
         const { name, email, password, phone, isPhoneVerified, cfToken } = await req.json();
@@ -59,7 +57,6 @@ export async function POST(req: Request) {
         // Send OTP email
         try {
             await sendOTP(email, otp);
-            console.log(`OTP sent to ${email}: ${otp}`);
         } catch (mailError) {
             console.error("Failed to send OTP email:", mailError);
         }

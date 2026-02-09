@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useMemo } from "react";
-import { Star, Video, FileText, Image, Copy, Check, CheckCircle, XCircle, Code, Trash2, Archive, Share2, Filter, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { Star, Video, FileText, Image, Check, CheckCircle, XCircle, Code, Trash2, Archive, ChevronLeft, ChevronRight, Search } from "lucide-react";
 
 interface DisplaySettings {
   showExperience: boolean;
@@ -39,8 +39,6 @@ interface TestimonialsTableProps {
 }
 
 import ConfirmationModal from "./ui/ConfirmationModal";
-
-// ... existing imports
 
 export default function TestimonialsTable({ 
   testimonials: initialTestimonials, 

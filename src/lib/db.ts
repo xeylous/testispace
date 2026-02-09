@@ -26,7 +26,7 @@ async function connectDB() {
         if (cached.conn.connection.readyState === 1) {
             return cached.conn;
         }
-        console.log("Stale connection detected, reconnecting...");
+        // Stale connection detected, reconnecting
         cached.conn = null;
         cached.promise = null;
     }
