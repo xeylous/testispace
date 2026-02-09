@@ -23,14 +23,12 @@ export async function POST(req: Request) {
         const tempUserDataString = await redis.get(`otp:${email}`);
 
         if (!tempUserDataString) {
-            console.log("Verify error: OTP expired or not found in Redis");
             return NextResponse.json({ message: "OTP has expired or is invalid" }, { status: 400 });
         }
 
         const tempUserData = JSON.parse(tempUserDataString);
 
         if (tempUserData.otp !== otp) {
-            console.log(`Verify error: OTP mismatch. Expected ${tempUserData.otp}, Got ${otp}`);
             return NextResponse.json({ message: "Invalid OTP" }, { status: 400 });
         }
 

@@ -92,7 +92,7 @@ export const authOptions: NextAuthOptions = {
                     user.id = existingUser._id.toString();
                     return true;
                 } catch (error) {
-                    console.log("Error checking if user exists: ", error);
+                    console.error("Error checking if user exists: ", error);
                     return false;
                 }
             }

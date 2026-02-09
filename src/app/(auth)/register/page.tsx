@@ -45,40 +45,9 @@ export default function RegisterPage() {
     setError("");
     setLoading(true);
 
-    // Placeholder for Phone Auth (Billing Restriction)
-    console.log("We are working on this feature");
+    // Phone Auth is currently disabled (requires Firebase Blaze Plan)
     alert("We are working on this feature");
     setLoading(false);
-    return;
-
-    /* 
-    // Original Implementation (Requires Firebase Blaze Plan for real numbers)
-    try {
-        if (!window.recaptchaVerifier) {
-            window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-                size: "invisible",
-                callback: () => {
-                    // reCAPTCHA solved
-                }
-            });
-        }
-        
-        const appVerifier = window.recaptchaVerifier;
-        const result = await signInWithPhoneNumber(auth, phone, appVerifier);
-        setConfirmationResult(result);
-        setShowPhoneOtpInput(true);
-        alert("OTP sent to your phone");
-    } catch (err: any) {
-        console.error("Phone Auth Error:", err);
-        if (err.code === "auth/billing-not-enabled") {
-             setError("Firebase Billing is required for real SMS. Please add 'Test Phone Numbers' in Firebase Console -> Authentication -> Sign-in method -> Phone.");
-        } else {
-             setError(`Failed to send Phone OTP: ${err.message} (${err.code || "unknown"})`);
-        }
-    } finally {
-        setLoading(false);
-    }
-    */
   };
 
   const handleVerifyPhoneOtp = async () => {
