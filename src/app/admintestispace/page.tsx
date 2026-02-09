@@ -26,7 +26,7 @@ export default function AdminDashboard() {
         const fetchStats = async () => {
             try {
                 const res = await fetch('/api/admin/stats');
-                constdata = await res.json();
+                const data = await res.json();
                 if (data.stats) {
                     setStats(data.stats);
                     setRecentUsers(data.recentUsers || []);
