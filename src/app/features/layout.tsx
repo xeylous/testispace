@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Features | TestiSpace",
         description: "Everything you need to collect, manage, and showcase testimonials that convert.",
-        url: "https://testispace.com/features",
+        url: "https://testispace.vercel.app/features",
         type: "website",
     },
 };

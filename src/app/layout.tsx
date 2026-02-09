@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "TestiSpace | Collect Testimonials From The Future",
     description: "The all-in-one platform to collect, manage, and embed video & text testimonials.",
-    url: "https://testispace.com",
+    url: "https://testispace.vercel.app",
     siteName: "TestiSpace",
     images: [
       {
@@ -49,6 +49,9 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
     apple: "/apple-icon.png",
   },
+  verification: {
+    google: "hxBsyO1MBr9vXpZ-GDsKIK9vwW4N8yxAMqfd-Y9qXyc",
+  },
 };
 
 import Providers from "@/components/Providers";
@@ -65,10 +68,10 @@ export default function RootLayout({
     "@graph": [
       {
         "@type": "Organization",
-        "@id": "https://testispace.com/#organization",
+        "@id": "https://testispace.vercel.app/#organization",
         "name": "TestiSpace",
-        "url": "https://testispace.com",
-        "logo": "https://testispace.com/icon.png",
+        "url": "https://testispace.vercel.app",
+        "logo": "https://testispace.vercel.app/icon.png",
         "sameAs": [
           "https://github.com/xeylous/testispace"
         ]
@@ -92,11 +95,11 @@ export default function RootLayout({
       },
       {
         "@type": "WebSite",
-        "@id": "https://testispace.com/#website",
-        "url": "https://testispace.com",
+        "@id": "https://testispace.vercel.app/#website",
+        "url": "https://testispace.vercel.app",
         "name": "TestiSpace",
         "publisher": {
-          "@id": "https://testispace.com/#organization"
+          "@id": "https://testispace.vercel.app/#organization"
         }
       }
     ]
