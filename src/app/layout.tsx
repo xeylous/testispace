@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "TestiSpace | Collect Testimonials From The Future",
     description: "The all-in-one platform to collect, manage, and embed video & text testimonials.",
-    url: "https://testispace.com",
+    url: "https://testispace.vercel.app",
     siteName: "TestiSpace",
     images: [
       {
@@ -49,6 +49,9 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
     apple: "/apple-icon.png",
   },
+  verification: {
+    google: "hxBsyO1MBr9vXpZ-GDsKIK9vwW4N8yxAMqfd-Y9qXyc",
+  },
 };
 
 import Providers from "@/components/Providers";
@@ -60,8 +63,56 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://testispace.vercel.app/#organization",
+        "name": "TestiSpace",
+        "url": "https://testispace.vercel.app",
+        "logo": "https://testispace.vercel.app/icon.png",
+        "sameAs": [
+          "https://github.com/xeylous/testispace"
+        ]
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "TestiSpace",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "description": "The all-in-one platform to collect, manage, and embed video & text testimonials.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "5",
+          "ratingCount": "1"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://testispace.vercel.app/#website",
+        "url": "https://testispace.vercel.app",
+        "name": "TestiSpace",
+        "publisher": {
+          "@id": "https://testispace.vercel.app/#organization"
+        }
+      }
+    ]
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

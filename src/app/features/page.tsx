@@ -104,7 +104,7 @@ export default function FeaturesPage() {
                         >
                              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
                              <div className="text-sm font-mono text-muted-foreground bg-muted/50 p-6 rounded-xl w-full max-w-md border border-border/50 shadow-sm">
-                                <span className="text-primary">{"<script"}</span> src="https://testispace.com/embed.js"<span className="text-primary">{"></script>"}</span>
+                                <span className="text-primary">{"<script"}</span> src="https://testispace.vercel.app/embed.js"<span className="text-primary">{"></script>"}</span>
                                 <br/>
                                 <span className="text-primary">{"<testi-space-embed"}</span> id="your-id"<span className="text-primary">{"></testi-space-embed>"}</span>
                              </div>
