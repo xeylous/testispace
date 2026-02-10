@@ -25,12 +25,12 @@ export default function Home() {
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-foreground">
-            Collect Testimonials <br />
-            <span className="text-primary">From The Future</span>
+            TestiSpace: Collect <br />
+            <span className="text-primary">Testimonials From The Future</span>
           </h1>
           
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-            The all-in-one platform to collect, manage, and embed video & text testimonials. 
+            TestiSpace is the all-in-one platform to collect, manage, and embed video & text testimonials. 
             Built for modern SaaS with a futuristic touch.
           </p>
 
