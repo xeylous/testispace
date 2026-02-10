@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "TestiSpace | Collect Testimonials From The Future",
   description: "The all-in-one platform to collect, manage, and embed video & text testimonials. Built for modern SaaS with a futuristic touch.",
-  keywords: ["testimonials", "video testimonials", "social proof", "saas tools", "feedback collection", "embed testimonials"],
+  keywords: ["TestiSpace", "TestiSpace reviews", "testimonials", "video testimonials", "social proof", "saas tools", "feedback collection", "embed testimonials"],
   authors: [{ name: "Antigravity" }],
   creator: "Antigravity",
   openGraph: {
