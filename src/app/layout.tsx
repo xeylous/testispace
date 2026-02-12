@@ -16,8 +16,8 @@ export const metadata: Metadata = {
   title: "TestiSpace | Collect Testimonials From The Future",
   description: "The all-in-one platform to collect, manage, and embed video & text testimonials. Built for modern SaaS with a futuristic touch.",
   keywords: ["TestiSpace", "TestiSpace reviews", "testimonials", "video testimonials", "social proof", "saas tools", "feedback collection", "embed testimonials"],
-  authors: [{ name: "Antigravity" }],
-  creator: "Antigravity",
+  authors: [{ name: "xeylous" }],
+  creator: "xeylous",
   openGraph: {
     title: "TestiSpace | Collect Testimonials From The Future",
     description: "The all-in-one platform to collect, manage, and embed video & text testimonials.",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     siteName: "TestiSpace",
     images: [
       {
-        url: "/og-image.png", // Ensure this image exists in your public folder
+        url: "/og-image-v2.png", 
         width: 1200,
         height: 630,
         alt: "TestiSpace Preview",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "TestiSpace | Collect Testimonials From The Future",
     description: "The all-in-one platform to collect, manage, and embed video & text testimonials.",
-    images: ["/og-image.png"],
+    images: ["/og-image-v2.png"],
   },
   robots: {
     index: true,
