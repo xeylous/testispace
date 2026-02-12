@@ -135,7 +135,7 @@ export default function DocsPage() {
         <div className="mt-20 pt-10 border-t border-border/40 text-center text-muted-foreground">
             <p>Ready to build?</p>
             <div className="mt-4 flex justify-center gap-4">
-                 <a href="https://github.com/xeylous/testispace" target="_blank" className="flex items-center gap-2 hover:text-white transition-colors">
+                 <a href="https://github.com/xeylous/testispace" target="_blank" className="flex items-center gap-2 hover:text-zinc-900 transition-colors">
                     <Code size={16} /> GitHub
                  </a>
             </div>
