@@ -39,3 +39,34 @@ export const sendOTP = async (email: string, otp: string) => {
         return null;
     }
 };
+
+export const sendResetPasswordEmail = async (email: string, resetLink: string) => {
+    try {
+        const mailOptions = {
+            from: `"TestiSpace" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: 'Reset your TestiSpace Password',
+            html: `
+                <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
+                    <div style="max-w-md mx-auto background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h2 style="color: #607D3B; text-align: center;">Reset Your Password</h2>
+                        <p style="color: #333; text-align: center;">You requested a password reset. Click the button below to reset your password.</p>
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="${resetLink}" style="display: inline-block; font-size: 16px; font-weight: bold; padding: 10px 20px; background-color: #607D3B; color: white; text-decoration: none; border-radius: 5px;">
+                                Reset Password
+                            </a>
+                        </div>
+                        <p style="text-align: center; color: #666; font-size: 12px;">This link will expire in 1 hour.</p>
+                        <p style="text-align: center; color: #666; font-size: 12px;">If you didn't request this, please ignore this email.</p>
+                    </div>
+                </div>
+            `
+        };
+
+        const result = await transporter.sendMail(mailOptions);
+        return result;
+    } catch (error) {
+        console.error("Error sending reset password email:", error);
+        return null;
+    }
+};
