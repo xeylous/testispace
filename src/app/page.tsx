@@ -176,28 +176,28 @@ function FeatureBento() {
             {/* Side Feature 2 - Fast */}
             <motion.div 
                  whileHover={{ scale: 1.02 }}
-                className="md:col-span-1 min-h-[150px] rounded-[2rem] bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 p-5 md:p-6 flex flex-col justify-center relative overflow-hidden"
+                className="md:col-span-1 min-h-[150px] rounded-[2rem] bg-card glass-card p-5 md:p-6 flex flex-col justify-center relative overflow-hidden"
             >
-                 <div className="absolute top-0 right-0 p-4 text-blue-500/10">
+                 <div className="absolute top-0 right-0 p-4 text-blue-600/5">
                     <Zap size={80} />
                 </div>
-                <div className="text-blue-500 mb-3 md:mb-4 relative z-10">
+                <div className="text-blue-600 dark:text-blue-400 mb-3 md:mb-4 relative z-10">
                     <Zap size={32} />
                 </div>
-                <h3 className="text-base md:text-lg font-bold text-blue-900 dark:text-blue-100 relative z-10">Blazing Fast</h3>
-                <p className="text-xs text-blue-700/70 dark:text-blue-300/70 mt-1 relative z-10">Sub-50ms loads via Redis.</p>
+                <h3 className="text-base md:text-lg font-bold text-foreground relative z-10">Blazing Fast</h3>
+                <p className="text-xs text-muted-foreground mt-1 relative z-10 font-medium">Sub-50ms loads via Redis.</p>
             </motion.div>
 
             {/* Side Feature 3 - Growth */}
             <motion.div 
                  whileHover={{ scale: 1.02 }}
-                className="md:col-span-1 min-h-[150px] rounded-[2rem] bg-stone-50/50 dark:bg-stone-900/20 border border-stone-200 dark:border-stone-800 p-5 md:p-6 flex flex-col justify-center relative overflow-hidden"
+                className="md:col-span-1 min-h-[150px] rounded-[2rem] bg-card glass-card p-5 md:p-6 flex flex-col justify-center relative overflow-hidden"
             >
-                <div className="absolute top-0 right-0 p-4 opacity-5">
+                <div className="absolute top-0 right-0 p-4 text-primary/5">
                     <Star size={80} />
                 </div>
-                <h3 className="text-base md:text-lg font-bold text-stone-800 dark:text-stone-200">Organic Growth</h3>
-                <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">Boost conversions with social proof.</p>
+                <h3 className="text-base md:text-lg font-bold text-foreground">Organic Growth</h3>
+                <p className="text-xs text-muted-foreground mt-1 font-medium">Boost conversions with social proof.</p>
                 <div className="mt-4 flex -space-x-2">
                     {[1,2,3].map(i => (
                         <div key={i} className="w-6 h-6 rounded-full border-2 border-white dark:border-stone-900 bg-gray-200" />
