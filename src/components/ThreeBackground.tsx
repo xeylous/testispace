@@ -57,7 +57,7 @@ export default function ThreeBackground() {
   }, []);
 
   // Prevent hydration mismatch by rendering only after mount
-  if (!mounted) return <div className="w-full h-auto fixed inset-0 -z-10 bg-[#030014]" />;
+  if (!mounted) return <div className="w-full h-auto fixed inset-0 -z-10 bg-transparent" />;
 
   return (
     <div className="w-full h-auto fixed inset-0 -z-10 pointer-events-none">
