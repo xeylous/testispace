@@ -23,7 +23,7 @@ export default function Navbar() {
                 
                 {/* Desktop Navigation */}
                 <div className="hidden md:flex items-center gap-2" onMouseLeave={() => setHoveredPath(null)}>
-                    {['Features', 'Pricing', 'Docs', 'Blog'].map((item) => {
+                    {['Features', 'Pricing', 'About', 'Docs', 'Blog'].map((item) => {
                         const href = item === 'Blog' ? 'https://blog.xeylous.xyz' : `/${item.toLowerCase()}`;
                         const isActive = pathname === href;
                         const isHovered = hoveredPath === href;
